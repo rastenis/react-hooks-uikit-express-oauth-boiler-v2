@@ -1,0 +1,6 @@
+node_modules
+.env
+config.json
+passportKeys.json
+dist
+coverage
