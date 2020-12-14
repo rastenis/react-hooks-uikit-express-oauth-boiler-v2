@@ -66,7 +66,7 @@ class Login extends Component {
               >
                 Submit
               </button>
-              <a
+              {/* <a
                 type="button"
                 className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
                 href="/auth/google"
@@ -88,7 +88,7 @@ class Login extends Component {
                   className=" uk-margin-small-right"
                 />
                 Sign in with Twitter
-              </a>
+              </a> */}
             </div>
           </div>
         </form>

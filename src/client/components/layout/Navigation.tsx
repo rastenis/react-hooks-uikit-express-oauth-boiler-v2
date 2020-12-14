@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
-import * as mutations from "../../store/mutations";
 
 class Navigation extends Component {
   render() {
@@ -75,20 +74,3 @@ class Navigation extends Component {
     );
   }
 }
-
-const requestLogout = () => {
-  return mutations.requestLogout();
-};
-
-const mapStateToProps = ({ auth }) => ({
-  auth
-});
-
-const mapDispatchToProps = {
-  requestLogout
-};
-
-export const ConnectedNavigation = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Navigation);

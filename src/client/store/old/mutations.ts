@@ -17,50 +17,50 @@ export const REQUEST_PASSWORD_CHANGE = `REQUEST_PASSWORD_CHANGE`;
 export const requestAuth = (email, password) => ({
   type: REQUEST_AUTH,
   email,
-  password
+  password,
 });
 
 export const processAuth = (status = AUTHENTICATING) => ({
   type: PROCESSING_AUTH,
-  authenticated: status
+  authenticated: status,
 });
 
 export const requestLogout = () => ({
-  type: REQUEST_LOGOUT
+  type: REQUEST_LOGOUT,
 });
 
-export const addMessage = msg => ({
+export const addMessage = (msg) => ({
   type: ADD_MESSAGE,
-  msg: msg
+  msg: msg,
 });
 
-export const deleteMessage = msg => ({
+export const deleteMessage = (msg) => ({
   type: DELETE_MESSAGE,
-  msg: msg
+  msg: msg,
 });
 
 export const setData = (data = {}) => ({
   type: SET_DATA,
-  data
+  data,
 });
 
 export const clearData = () => ({
-  type: CLEAR_DATA
+  type: CLEAR_DATA,
 });
 
 export const requestAccountCreation = (email, password) => ({
   type: REQUEST_ACCOUNT_CREATION,
   email,
-  password
+  password,
 });
 
 export const requestPasswordChange = (oldPassword, newPassword) => ({
   type: REQUEST_PASSWORD_CHANGE,
   oldPassword,
-  newPassword
+  newPassword,
 });
 
-export const requestAuthUnlink = toUnlink => ({
+export const requestAuthUnlink = (toUnlink) => ({
   type: REQUEST_AUTH_UNLINK,
-  toUnlink
+  toUnlink,
 });

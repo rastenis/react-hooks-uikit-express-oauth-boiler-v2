@@ -2,8 +2,16 @@ import React, { Component } from "react";
 import * as mutations from "../store/mutations";
 import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { AuthState } from "../store";
 
-class Dashboard extends Component {
+export interface DashboardProps {
+  auth: AuthState;
+  data: any;
+}
+
+export class Dashboard extends Component<DashboardProps> {
+  static defaultProps = {};
+
   render() {
     return (
       <div>
@@ -44,7 +52,7 @@ class Dashboard extends Component {
 
 const mapStateToProps = ({ auth, data }) => ({
   auth,
-  data
+  data,
 });
 
 export const ConnectedDashboard = connect(mapStateToProps)(Dashboard);

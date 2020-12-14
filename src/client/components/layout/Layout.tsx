@@ -8,14 +8,14 @@ import { ConnectedDashboard } from "../Dashboard";
 import { ConnectedNavigation } from "./Navigation";
 import {
   ConnectedOnlyAuthenticated,
-  ConnectedOnlyUnauthenticated
+  ConnectedOnlyUnauthenticated,
 } from "./PrivateRoute";
 import { ConnectedMessages } from "./Messages";
 import { ConnectedUserInformation } from "../UserInformation";
 import { ConnectedProfile } from "../Profile";
 
 // store
-import ProviderWithRouter from "./ProviderWithRouter";
+import { provider as ProviderWithRouter } from "./ProviderWithRouter";
 
 export default function Layout() {
   return (

@@ -6,7 +6,7 @@ class Message extends Component {
   constructor(...args) {
     super(...args);
     this.state = {
-      closer: null
+      closer: null,
     };
   }
 
@@ -14,7 +14,7 @@ class Message extends Component {
     this.setState({
       closer: setTimeout(() => {
         this.props.deleteMessage(this.props.message);
-      }, 3000)
+      }, 3000),
     });
   }
 
@@ -40,16 +40,3 @@ class Message extends Component {
     );
   }
 }
-
-const deleteMessage = m => {
-  return mutations.deleteMessage(m);
-};
-
-const mapDispatchToProps = {
-  deleteMessage
-};
-
-export const ConnectedMessage = connect(
-  null,
-  mapDispatchToProps
-)(Message);

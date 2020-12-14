@@ -8,7 +8,7 @@
     "build": "webpack --optimization-minimize --optimization-node-env production && tsc",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:server": "ts-node src/server/index.ts -P tsconfig.json",
-    "dev:client": "webpack-dev-server --host 0.0.0.0",
+    "dev:client": "webpack serve --host 0.0.0.0",
     "start": "cross-env NODE_ENV=production node dist/server/src/server/index",
     "launch": "npm run build; npm run start",
     "setup": "node scripts/setup.js",
@@ -25,6 +25,7 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@types/react": "^17.0.0",
     "await-to-js": "^2.1.1",
     "axios": "^0.21.0",
     "bcrypt": "^5.0.0",
