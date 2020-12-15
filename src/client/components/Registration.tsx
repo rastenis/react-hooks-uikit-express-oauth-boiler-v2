@@ -1,20 +1,22 @@
 import React, { Component } from "react";
-import * as mutations from "../store/mutations";
-import { connect } from "react-redux";
+import { Actions } from "../store";
+import { MainContext, MainStore } from "./layout/ProviderWithRouter";
 
-class Registration extends Component {
-  constructor(...args) {
-    super(...args);
+export class Registration extends Component {
+  store: MainStore;
+  state: {
+    email: string;
+    password: string;
+    passwordConf: string;
+    errors: string[];
+  } = { email: "", password: "", passwordConf: "", errors: [] }; // local state
 
-    this.state = {
-      email: "",
-      password: "",
-      passwordConf: "",
-      errors: []
-    };
+  constructor(args) {
+    super(args);
+    this.store = React.useContext(MainContext);
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -22,35 +24,55 @@ class Registration extends Component {
     // clearing previous errors
     this.state.errors = [];
 
-    // validation
+    // quick check for email validity
     if (!/\S+@\S+\.\S+/.test(this.state.email)) {
-      this.props.addMessage({ error: true, msg: "Invalid email address!" });
+      this.store.dispatch({
+        type: Actions.ADD_MESSAGE,
+        payload: {
+          error: true,
+          msg: "Invalid email address!",
+        },
+      });
       this.state.errors.push("email");
       return;
     }
 
     // invalid password length
     if (this.state.password.length < 5 || this.state.password.length > 100) {
-      this.props.addMessage({
-        error: true,
-        msg: "Password must be between 5 and a 100 characters!"
+      this.store.dispatch({
+        type: Actions.ADD_MESSAGE,
+        payload: {
+          error: true,
+          msg: "Password must be between 5 and a 100 characters!",
+        },
       });
+
       this.state.errors.push("password");
       return;
     }
 
     // non-matching passwords
     if (this.state.password != this.state.passwordConf) {
-      this.props.addMessage({
-        error: true,
-        msg: "Passwords do not match!"
+      this.store.dispatch({
+        type: Actions.ADD_MESSAGE,
+        payload: {
+          error: true,
+          msg: "Passwords do not match!",
+        },
       });
+
       this.state.errors.push("password");
       return;
     }
 
     // proceeding
-    this.props.registerUser(this.state.email, this.state.password);
+    this.store.dispatch({
+      type: Actions.DO_REGISTRATION,
+      payload: {
+        email: this.state.email,
+        password: this.state.password,
+      },
+    });
   };
 
   render() {
@@ -69,7 +91,7 @@ class Registration extends Component {
             <div className="uk-form-controls uk-margin-small-bottom">
               <input
                 className={`uk-input ${
-                  this.state.errors.find(e => e == "email")
+                  this.state.errors.find((e) => e == "email")
                     ? "uk-form-danger"
                     : null
                 }`}
@@ -87,7 +109,7 @@ class Registration extends Component {
             <div className="uk-form-controls uk-margin-small-bottom">
               <input
                 className={`uk-input ${
-                  this.state.errors.find(e => e == "password")
+                  this.state.errors.find((e) => e == "password")
                     ? "uk-form-danger"
                     : null
                 }`}
@@ -105,7 +127,7 @@ class Registration extends Component {
             <div className="uk-form-controls uk-margin-small-bottom">
               <input
                 className={`uk-input ${
-                  this.state.errors.find(e => e == "password")
+                  this.state.errors.find((e) => e == "password")
                     ? "uk-form-danger"
                     : null
                 }`}
@@ -132,26 +154,3 @@ class Registration extends Component {
     );
   }
 }
-
-const registerUser = (e, p) => {
-  return mutations.requestAccountCreation(e, p);
-};
-
-const addMessage = m => {
-  return mutations.addMessage(m);
-};
-
-const mapStateToProps = ({ auth, messages }) => ({
-  auth,
-  messages
-});
-
-const mapDispatchToProps = {
-  registerUser,
-  addMessage
-};
-
-export const ConnectedRegistration = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Registration);
