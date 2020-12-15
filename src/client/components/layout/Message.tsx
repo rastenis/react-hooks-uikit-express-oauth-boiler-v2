@@ -1,25 +1,35 @@
+import { Store } from "express-session";
 import React, { Component } from "react";
-import { connect } from "react-redux";
-import * as mutations from "../../store/mutations";
+import { Actions } from "../../store";
+import { MainContext, MainStore } from "./ProviderWithRouter";
 
-class Message extends Component {
-  constructor(...args) {
-    super(...args);
-    this.state = {
-      closer: null,
-    };
+interface MessageProps {
+  message: any;
+}
+
+export class Message extends Component<MessageProps> {
+  store: MainStore;
+  state: { closeTimeout?: number | undefined } = {}; // local state
+
+  constructor(args) {
+    super(args);
+    this.store = React.useContext(MainContext);
+    this.state = {};
   }
 
   componentDidMount() {
     this.setState({
       closer: setTimeout(() => {
-        this.props.deleteMessage(this.props.message);
+        this.store.dispatch({
+          type: Actions.DELETE_MESSAGE,
+          payload: this.props.message.id,
+        });
       }, 3000),
     });
   }
 
   setCancelled = () => {
-    clearTimeout(this.state.closer);
+    clearTimeout(this.state.closeTimeout);
   };
 
   render() {

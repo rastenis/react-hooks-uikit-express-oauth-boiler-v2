@@ -1,15 +1,17 @@
 import { Redirect, Route } from "react-router";
 import React from "react";
-import { connect } from "react-redux";
 
 import { AuthState } from "../../store";
+import { MainContext } from "./ProviderWithRouter";
 
-const OnlyUnauthenticated = ({ component: Component, auth, ...rest }) => {
+export const OnlyUnauthenticated = ({ component: Component, ...rest }) => {
+  const { reducer } = React.useContext(MainContext);
+
   return (
     <Route
       {...rest}
       render={(props) => {
-        return auth === AuthState.AUTHENTICATED ? (
+        return reducer.auth === AuthState.AUTHENTICATED ? (
           <Redirect to="/" />
         ) : (
           <Component {...props} />
@@ -19,12 +21,14 @@ const OnlyUnauthenticated = ({ component: Component, auth, ...rest }) => {
   );
 };
 
-const OnlyAuthenticated = ({ component: Component, auth, ...rest }) => {
+export const OnlyAuthenticated = ({ component: Component, ...rest }) => {
+  const { reducer } = React.useContext(MainContext);
+
   return (
     <Route
       {...rest}
       render={(props) => {
-        return auth !== AuthState.AUTHENTICATED ? (
+        return reducer.auth !== AuthState.AUTHENTICATED ? (
           <Redirect to="/" />
         ) : (
           <Component {...props} />
@@ -33,14 +37,3 @@ const OnlyAuthenticated = ({ component: Component, auth, ...rest }) => {
     />
   );
 };
-
-const mapStateToProps = ({ auth }) => ({
-  auth,
-});
-
-export const ConnectedOnlyAuthenticated = connect(mapStateToProps)(
-  OnlyAuthenticated
-);
-export const ConnectedOnlyUnauthenticated = connect(mapStateToProps)(
-  OnlyUnauthenticated
-);

@@ -69,15 +69,10 @@ export const requestAuthUnlink = (toUnlink) => ({
 
 export const stateMainReducer = (state, action) => {
   switch (action.type) {
-    case "setusername":
+    case Actions.DELETE_MESSAGE:
       return {
         ...state,
-        name: action.payload,
-      };
-    case "setlastname":
-      return {
-        ...state,
-        lastname: action.payload,
+        messages: state.messages.filter((m) => m.id !== action.payload),
       };
     default:
       return state;

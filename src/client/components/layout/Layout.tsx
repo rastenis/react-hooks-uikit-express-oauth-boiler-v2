@@ -5,12 +5,9 @@ import React from "react";
 import { ConnectedLogin } from "../Login";
 import { ConnectedRegistration } from "../Registration";
 import { ConnectedDashboard } from "../Dashboard";
-import { ConnectedNavigation } from "./Navigation";
-import {
-  ConnectedOnlyAuthenticated,
-  ConnectedOnlyUnauthenticated,
-} from "./PrivateRoute";
-import { ConnectedMessages } from "./Messages";
+import { Navigation } from "./Navigation";
+import { OnlyAuthenticated, OnlyUnauthenticated } from "./PrivateRoute";
+import { Messages } from "./Messages";
 import { ConnectedUserInformation } from "../UserInformation";
 import { ConnectedProfile } from "../Profile";
 
@@ -22,27 +19,21 @@ export default function Layout() {
     <div>
       <BrowserRouter>
         <ProviderWithRouter>
-          <ConnectedNavigation />
-          <ConnectedMessages />
+          <Navigation />
+          <Messages />
           <div className="uk-container uk-width-1-3 uk-margin-medium-top">
             <Switch>
               <Route exact path="/" component={ConnectedDashboard} />
-              <ConnectedOnlyUnauthenticated
-                path="/login"
-                component={ConnectedLogin}
-              />
-              <ConnectedOnlyAuthenticated
+              <OnlyUnauthenticated path="/login" component={ConnectedLogin} />
+              <OnlyAuthenticated
                 path="/user/:index"
                 component={ConnectedUserInformation}
               />
-              <ConnectedOnlyUnauthenticated
+              <OnlyUnauthenticated
                 path="/registration"
                 component={ConnectedRegistration}
               />
-              <ConnectedOnlyAuthenticated
-                path="/profile"
-                component={ConnectedProfile}
-              />
+              <OnlyAuthenticated path="/profile" component={ConnectedProfile} />
             </Switch>
           </div>
         </ProviderWithRouter>

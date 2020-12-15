@@ -1,76 +1,77 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
-import { connect } from "react-redux";
+import { MainContext, MainStore } from "./ProviderWithRouter";
+import { Actions, AuthState } from "../../store";
 
-class Navigation extends Component {
-  render() {
-    return (
-      <nav className="uk-navbar-container uk-navbar" uk-navbar="true">
-        <div className="uk-navbar-left">
-          <ul className="uk-navbar-nav">
-            <li
-              className="uk-logo uk-text-middle uk-navbar-item"
-              style={{ fontWeight: "bold" }}
+export const Navigation = () => {
+  const store: MainStore = React.useContext(MainContext);
+
+  return (
+    <nav className="uk-navbar-container uk-navbar" uk-navbar="true">
+      <div className="uk-navbar-left">
+        <ul className="uk-navbar-nav">
+          <li
+            className="uk-logo uk-text-middle uk-navbar-item"
+            style={{ fontWeight: "bold" }}
+          >
+            boiler
+          </li>
+          <li className="uk-margin-large-right" />
+          <li>
+            <NavLink
+              exact
+              activeStyle={{ className: "uk-active", color: "black" }}
+              to="/"
             >
-              boiler
-            </li>
-            <li className="uk-margin-large-right" />
+              Dashboard
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+      <div className="uk-navbar-right">
+        {store.reducer.auth == AuthState.AUTHENTICATED ? (
+          <ul className="uk-navbar-nav">
             <li>
               <NavLink
                 exact
                 activeStyle={{ className: "uk-active", color: "black" }}
-                to="/"
+                to="/profile"
               >
-                Dashboard
+                Profile
+              </NavLink>
+            </li>
+            <li>
+              <a
+                className="uk-text-danger"
+                onClick={store.dispatch({ type: Actions.REQUEST_LOGOUT })}
+              >
+                Logout
+              </a>
+            </li>
+          </ul>
+        ) : store.reducer.auth == AuthState.WAITING ? null : (
+          <ul className="uk-navbar-nav">
+            <li>
+              <NavLink
+                exact
+                activeStyle={{ className: "uk-active", color: "black" }}
+                to="/login"
+              >
+                Login
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                exact
+                activeStyle={{ className: "uk-active", color: "black" }}
+                to="/registration"
+              >
+                Register
               </NavLink>
             </li>
           </ul>
-        </div>
-        <div className="uk-navbar-right">
-          {this.props.auth == mutations.AUTHENTICATED ? (
-            <ul className="uk-navbar-nav">
-              <li>
-                <NavLink
-                  exact
-                  activeStyle={{ className: "uk-active", color: "black" }}
-                  to="/profile"
-                >
-                  Profile
-                </NavLink>
-              </li>
-              <li>
-                <a
-                  className="uk-text-danger"
-                  onClick={this.props.requestLogout}
-                >
-                  Logout
-                </a>
-              </li>
-            </ul>
-          ) : this.props.auth == mutations.WAITING ? null : (
-            <ul className="uk-navbar-nav">
-              <li>
-                <NavLink
-                  exact
-                  activeStyle={{ className: "uk-active", color: "black" }}
-                  to="/login"
-                >
-                  Login
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  exact
-                  activeStyle={{ className: "uk-active", color: "black" }}
-                  to="/registration"
-                >
-                  Register
-                </NavLink>
-              </li>
-            </ul>
-          )}
-        </div>
-      </nav>
-    );
-  }
-}
+        )}
+      </div>
+    </nav>
+  );
+};

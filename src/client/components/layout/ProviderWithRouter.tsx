@@ -2,12 +2,15 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { defaultMainState, Actions, stateMainReducer } from "../../store/index";
 
-export const MainContext = React.createContext<{ dispatch: any; reducer: any }>(
-  {
-    dispatch: null,
-    reducer: null,
-  }
-); // React.createContext accepts a defaultValue as the first param
+export interface MainStore {
+  dispatch: any;
+  reducer: any;
+}
+
+export const MainContext = React.createContext<MainStore>({
+  dispatch: null,
+  reducer: null,
+}); // React.createContext accepts a defaultValue as the first param
 
 type ProviderWithRouterProps = {
   children: React.ReactNode;
