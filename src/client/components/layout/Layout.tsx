@@ -3,12 +3,12 @@ import React from "react";
 
 // components
 import { Login } from "../Login";
-import { ConnectedRegistration } from "../Registration";
+import { Registration } from "../Registration";
 import { Dashboard } from "../Dashboard";
 import { Navigation } from "./Navigation";
 import { OnlyAuthenticated, OnlyUnauthenticated } from "./PrivateRoute";
 import { Messages } from "./Messages";
-import { ConnectedUserInformation } from "../UserInformation";
+import { UserInformation } from "../UserInformation";
 import { Profile } from "../Profile";
 
 // store
@@ -27,11 +27,11 @@ export default function Layout() {
               <OnlyUnauthenticated path="/login" component={Login} />
               <OnlyAuthenticated
                 path="/user/:index"
-                component={ConnectedUserInformation}
+                component={UserInformation}
               />
               <OnlyUnauthenticated
                 path="/registration"
-                component={ConnectedRegistration}
+                component={Registration}
               />
               <OnlyAuthenticated path="/profile" component={Profile} />
             </Switch>

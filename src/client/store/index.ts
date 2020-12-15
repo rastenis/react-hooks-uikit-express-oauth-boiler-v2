@@ -114,6 +114,7 @@ export interface Action {
 
 export interface MainState {
   data: {};
+  people: Person[];
   auth: AuthState;
   messages: Message[]; //TODO: type
 }
@@ -123,8 +124,25 @@ export interface Message {
   msg: string;
 }
 
+// example data object - Person
+export interface Person {
+  email: string;
+  contact: {
+    phone: string;
+    company: string;
+    address: {
+      line1: string;
+      line2: string;
+      city: string;
+      state: string;
+      zipcode: string;
+    };
+  };
+}
+
 export const defaultMainState: MainState = {
   data: {},
   auth: AuthState.WAITING,
   messages: [],
+  people: [],
 };
