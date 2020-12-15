@@ -5,7 +5,7 @@ import { MainContext, MainStore } from "./layout/ProviderWithRouter";
 
 export const UserInformation = ({ match }) => {
   const store: MainStore = React.useContext(MainContext);
-  const person = store.reducer.people[match.params.index];
+  const person = store.state.people[match.params.index];
 
   return (
     <div>

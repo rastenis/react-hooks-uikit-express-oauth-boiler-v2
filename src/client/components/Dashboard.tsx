@@ -18,14 +18,14 @@ export const Dashboard = () => {
       <hr className="uk-margin-medium-bottom" />
 
       <ul className="uk-list uk-list-divider">
-        {store.reducer.auth ? ( // waiting for async data
-          store.reducer.auth == AuthState.WAITING ? (
+        {store.state.auth ? ( // waiting for async data
+          store.state.auth == AuthState.WAITING ? (
             <span
               className="   uk-position-center"
               data-uk-spinner={"ratio: 3"}
             />
-          ) : store.reducer.data.people ? ( // listing out people (if data contains people to list)
-            store.reducer.data.people.map((person, index) => {
+          ) : store.state.data.people ? ( // listing out people (if data contains people to list)
+            store.state.data.people.map((person, index) => {
               return (
                 <li key={index}>
                   {person.name}{" "}

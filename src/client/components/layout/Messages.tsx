@@ -6,7 +6,7 @@ import "../style/Message.css";
 import { MainContext } from "./ProviderWithRouter";
 
 export const Messages = (props) => {
-  const { reducer } = React.useContext(MainContext);
+  const { state } = React.useContext(MainContext);
 
   return (
     <div className="uk-container uk-width-1-2 uk-margin-medium-top">
@@ -15,8 +15,8 @@ export const Messages = (props) => {
         transitionEnterTimeout={500}
         transitionLeaveTimeout={300}
       >
-        {reducer.messages.length
-          ? reducer.messages.map((m, index) => {
+        {state.messages.length
+          ? state.messages.map((m, index) => {
               return <Message key={index} message={m} />;
             })
           : null}

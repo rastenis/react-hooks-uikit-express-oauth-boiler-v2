@@ -1,16 +1,21 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import { defaultMainState, Actions, stateMainReducer } from "../../store/index";
+import {
+  defaultMainState,
+  Actions,
+  mainReducer,
+  mainReducerMiddleware,
+} from "../../store/index";
 
 export interface MainStore {
   dispatch: any;
-  reducer: any;
+  state: any;
 }
 
 // Make a context
 export const MainContext = React.createContext<MainStore>({
   dispatch: null,
-  reducer: null,
+  state: null,
 });
 
 type ProviderWithRouterProps = {
@@ -19,16 +24,19 @@ type ProviderWithRouterProps = {
 
 class ProviderWithRouter extends React.Component<ProviderWithRouterProps> {
   _dispatch: any;
-  _reducer: any;
+  _state: any;
 
   constructor(props) {
     super(props);
 
     // store
-    [this._reducer, this._dispatch] = React.useReducer(
-      stateMainReducer,
+    let dispatchToMainReducer;
+    [this._state, dispatchToMainReducer] = React.useReducer(
+      mainReducer,
       defaultMainState
     );
+    this._dispatch = mainReducerMiddleware(dispatchToMainReducer);
+
     // initialize session
     this.dispatch({
       type: Actions.REQUEST_SESSION_FETCH,
@@ -39,14 +47,10 @@ class ProviderWithRouter extends React.Component<ProviderWithRouterProps> {
     return this._dispatch;
   }
 
-  public get reducer() {
-    return this._reducer;
-  }
-
   render() {
     return (
       <MainContext.Provider
-        value={{ dispatch: this.dispatch, reducer: this.reducer }}
+        value={{ dispatch: this.dispatch, state: this.state }}
       >
         {this.props.children}
       </MainContext.Provider>

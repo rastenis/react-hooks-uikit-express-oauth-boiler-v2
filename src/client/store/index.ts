@@ -1,4 +1,5 @@
-import React from "react";
+import axios from "axios";
+import { Messages } from "../components/layout/Messages";
 
 export const REQUEST_AUTH = `REQUEST_AUTH`;
 export const PROCESSING_AUTH = `PROCESSING_AUTH`;
@@ -67,13 +68,41 @@ export const requestAuthUnlink = (toUnlink) => ({
   toUnlink,
 });
 
-export const stateMainReducer = (state: MainState, action: Action) => {
+// this is for handling async actions, and then passiing the result on to the reducer, which is synchronous
+export const mainReducerMiddleware = (dispatch) => async (action: Action) => {
+  switch (action.type) {
+    case Actions.REQUEST_SESSION_FETCH: {
+      const { data } = await axios.get(`/api/data`);
+
+      const newState: MainState = {
+        data: {},
+        userData: data.state.userData,
+        people: data.state.people,
+        auth: data.state.auth
+          ? AuthState.AUTHENTICATED
+          : AuthState.NOT_AUTHENTICATED,
+        messages: [],
+      };
+
+      // register server side messages, if any
+      if (data.message) {
+        newState.messages.push(data.message);
+      }
+
+      dispatch({ type: Actions.SET_STATE, payload: newState });
+    }
+  }
+};
+
+export const mainReducer = (state: MainState, action: Action) => {
   switch (action.type) {
     case Actions.DELETE_MESSAGE:
       return {
         ...state,
         messages: state.messages.filter((m) => m !== action.payload),
       };
+    case Actions.SET_STATE:
+      return action.payload;
     default:
       return state;
   }
@@ -83,6 +112,7 @@ export enum AuthState {
   PROCESSING = `PROCESSING`,
   AUTHENTICATING = `AUTHENTICATING`,
   AUTHENTICATED = `AUTHENTICATED`,
+  NOT_AUTHENTICATED = `NOT_AUTHENTICATED`,
   WAITING = `WAITING`,
 }
 
@@ -96,6 +126,7 @@ export enum Actions {
   CLEAR_DATA = `CLEAR_DATA`,
   ADD_MESSAGE = `ADD_MESSAGE`,
   DELETE_MESSAGE = `DELETE_MESSAGE`,
+  SET_STATE = `SET_STATE`,
   REQUEST_ACCOUNT_CREATION = `REQUEST_ACCOUNT_CREATION`,
   REQUEST_SESSION_FETCH = `REQUEST_SESSION_FETCH`,
   REQUEST_LOGOUT = `REQUEST_LOGOUT`,
@@ -117,6 +148,7 @@ export interface MainState {
   people: Person[];
   auth: AuthState;
   messages: Message[]; //TODO: type
+  userData: any;
 }
 
 export interface Message {
@@ -142,6 +174,7 @@ export interface Person {
 
 export const defaultMainState: MainState = {
   data: {},
+  userData: {},
   auth: AuthState.WAITING,
   messages: [],
   people: [],

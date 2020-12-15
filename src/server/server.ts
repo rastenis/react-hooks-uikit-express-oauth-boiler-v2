@@ -124,7 +124,7 @@ app.get("/api/data", (req, res) => {
     auth: true,
     state: {
       userData: req.session.user.data,
-      // mock 'static' data
+      // mock some data
       people: Array.apply(null, Array(4)).map(() => {
         return {
           name: faker.name.findName(),

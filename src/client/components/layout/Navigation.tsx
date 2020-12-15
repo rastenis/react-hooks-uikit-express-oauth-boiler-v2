@@ -29,7 +29,7 @@ export const Navigation = () => {
         </ul>
       </div>
       <div className="uk-navbar-right">
-        {store.reducer.auth == AuthState.AUTHENTICATED ? (
+        {store.state.auth == AuthState.AUTHENTICATED ? (
           <ul className="uk-navbar-nav">
             <li>
               <NavLink
@@ -49,7 +49,7 @@ export const Navigation = () => {
               </a>
             </li>
           </ul>
-        ) : store.reducer.auth == AuthState.WAITING ? null : (
+        ) : store.state.auth == AuthState.WAITING ? null : (
           <ul className="uk-navbar-nav">
             <li>
               <NavLink

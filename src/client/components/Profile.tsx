@@ -87,8 +87,8 @@ export class Profile extends Component {
           style={{ width: "60%" }}
           className="uk-form-stacked uk-container uk-container-center"
         >
-          {Object.keys(this.store.reducer.data || {}).length ? (
-            this.store.reducer.data.userData.password ? (
+          {Object.keys(this.store.state.data || {}).length ? (
+            this.store.state.data.userData.password ? (
               <div className="uk-margin">
                 <h3>Change Password</h3>
                 <label className="uk-form-label" htmlFor="form-stacked-text">
@@ -164,8 +164,8 @@ export class Profile extends Component {
           className="uk-form-stacked uk-container uk-container-center"
         >
           <h3>Linked Accounts</h3>
-          {Object.keys(this.store.reducer.data || {}).length > 0 ? (
-            this.store.reducer.data.userData.google ? (
+          {Object.keys(this.store.state.data || {}).length > 0 ? (
+            this.store.state.data.userData.google ? (
               <button
                 type="button"
                 className="uk-button uk-button-danger  uk-width-expand uk-margin-small-bottom"
@@ -173,8 +173,8 @@ export class Profile extends Component {
                 data-target="google"
                 disabled={
                   !(
-                    this.store.reducer.data.userData.tokens.length > 1 ||
-                    this.store.reducer.data.userData.password
+                    this.store.state.data.userData.tokens.length > 1 ||
+                    this.store.state.data.userData.password
                   )
                 }
               >
@@ -199,8 +199,8 @@ export class Profile extends Component {
             )
           ) : null}
 
-          {Object.keys(this.store.reducer.data || {}).length > 0 ? (
-            this.store.reducer.data.userData.twitter ? (
+          {Object.keys(this.store.state.data || {}).length > 0 ? (
+            this.store.state.data.userData.twitter ? (
               <button
                 type="button"
                 className="uk-button uk-button-danger uk-width-expand uk-margin-small-bottom"
@@ -208,8 +208,8 @@ export class Profile extends Component {
                 data-target="twitter"
                 disabled={
                   !(
-                    this.store.reducer.data.userData.tokens.length > 1 ||
-                    this.store.reducer.data.userData.password
+                    this.store.state.data.userData.tokens.length > 1 ||
+                    this.store.state.data.userData.password
                   )
                 }
               >
