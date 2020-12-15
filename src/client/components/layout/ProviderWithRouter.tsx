@@ -7,10 +7,11 @@ export interface MainStore {
   reducer: any;
 }
 
+// Make a context
 export const MainContext = React.createContext<MainStore>({
   dispatch: null,
   reducer: null,
-}); // React.createContext accepts a defaultValue as the first param
+});
 
 type ProviderWithRouterProps = {
   children: React.ReactNode;

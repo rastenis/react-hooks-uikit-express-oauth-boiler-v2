@@ -4,7 +4,7 @@ import React from "react";
 // components
 import { ConnectedLogin } from "../Login";
 import { ConnectedRegistration } from "../Registration";
-import { ConnectedDashboard } from "../Dashboard";
+import { Dashboard } from "../Dashboard";
 import { Navigation } from "./Navigation";
 import { OnlyAuthenticated, OnlyUnauthenticated } from "./PrivateRoute";
 import { Messages } from "./Messages";
@@ -23,7 +23,7 @@ export default function Layout() {
           <Messages />
           <div className="uk-container uk-width-1-3 uk-margin-medium-top">
             <Switch>
-              <Route exact path="/" component={ConnectedDashboard} />
+              <Route exact path="/" component={Dashboard} />
               <OnlyUnauthenticated path="/login" component={ConnectedLogin} />
               <OnlyAuthenticated
                 path="/user/:index"

@@ -1,20 +1,25 @@
 import React, { Component } from "react";
-import * as mutations from "../store/mutations";
 import { connect } from "react-redux";
+import { Actions } from "../store";
+import { MainContext, MainStore } from "./layout/ProviderWithRouter";
 
-class Profile extends Component {
-  constructor(...args) {
-    super(...args);
+export class Profile extends Component {
+  store: MainStore;
 
-    this.state = {
-      oldPassword: "",
-      newPassword: "",
-      newPasswordConf: "",
-      errors: []
-    };
+  // local state
+  state: {
+    oldPassword: string;
+    newPassword: string;
+    newPasswordConf: string;
+    errors: string[];
+  } = { oldPassword: "", newPassword: "", newPasswordConf: "", errors: [] };
+
+  constructor(args) {
+    super(args);
+    this.store = React.useContext(MainContext);
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -24,9 +29,12 @@ class Profile extends Component {
 
     // non-matching passwords
     if (this.state.newPassword != this.state.newPasswordConf) {
-      this.props.addMessage({
-        error: true,
-        msg: "Passwords do not match!"
+      this.store.dispatch({
+        type: Actions.ADD_MESSAGE,
+        payload: {
+          error: true,
+          msg: "Passwords do not match!",
+        },
       });
       this.state.errors.push("password");
       return;
@@ -37,16 +45,25 @@ class Profile extends Component {
       this.state.newPassword.length < 5 ||
       this.state.newPassword.length > 100
     ) {
-      this.props.addMessage({
-        error: true,
-        msg: "Password must be between 5 and a 100 characters!"
+      this.store.dispatch({
+        type: Actions.ADD_MESSAGE,
+        payload: {
+          error: true,
+          msg: "Password must be between 5 and a 100 characters!",
+        },
       });
       this.state.errors.push("password");
       return;
     }
 
     // proceeding
-    this.props.changePassword(this.state.oldPassword, this.state.newPassword);
+    this.store.dispatch({
+      type: Actions.DO_PASSWORD_CHANGE,
+      payload: {
+        oldPassword: this.state.oldPassword,
+        newPassword: this.state.newPassword,
+      },
+    });
 
     // resetting form
     this.state.newPassword = "";
@@ -54,8 +71,11 @@ class Profile extends Component {
     this.state.oldPassword = "";
   };
 
-  submitUnlinkAuth = e => {
-    this.props.unlinkAuth(e.target.dataset.target);
+  submitUnlinkAuth = (e) => {
+    this.store.dispatch({
+      type: Actions.DO_AUTH_UNLINK,
+      payload: e.target.dataset.target,
+    });
   };
 
   render() {
@@ -67,8 +87,8 @@ class Profile extends Component {
           style={{ width: "60%" }}
           className="uk-form-stacked uk-container uk-container-center"
         >
-          {Object.keys(this.props.data || {}).length ? (
-            this.props.data.userData.password ? (
+          {Object.keys(this.store.reducer.data || {}).length ? (
+            this.store.reducer.data.userData.password ? (
               <div className="uk-margin">
                 <h3>Change Password</h3>
                 <label className="uk-form-label" htmlFor="form-stacked-text">
@@ -77,7 +97,7 @@ class Profile extends Component {
                 <div className="uk-form-controls uk-margin-small-bottom">
                   <input
                     className={`uk-input ${
-                      this.state.errors.find(e => e == "password")
+                      this.state.errors.find((e) => e == "password")
                         ? "uk-form-danger"
                         : null
                     }`}
@@ -95,7 +115,7 @@ class Profile extends Component {
                 <div className="uk-form-controls uk-margin-small-bottom">
                   <input
                     className={`uk-input ${
-                      this.state.errors.find(e => e == "password")
+                      this.state.errors.find((e) => e == "password")
                         ? "uk-form-danger"
                         : null
                     }`}
@@ -113,7 +133,7 @@ class Profile extends Component {
                 <div className="uk-form-controls uk-margin-small-bottom">
                   <input
                     className={`uk-input ${
-                      this.state.errors.find(e => e == "password")
+                      this.state.errors.find((e) => e == "password")
                         ? "uk-form-danger"
                         : null
                     }`}
@@ -144,8 +164,8 @@ class Profile extends Component {
           className="uk-form-stacked uk-container uk-container-center"
         >
           <h3>Linked Accounts</h3>
-          {Object.keys(this.props.data || {}).length > 0 ? (
-            this.props.data.userData.google ? (
+          {Object.keys(this.store.reducer.data || {}).length > 0 ? (
+            this.store.reducer.data.userData.google ? (
               <button
                 type="button"
                 className="uk-button uk-button-danger  uk-width-expand uk-margin-small-bottom"
@@ -153,8 +173,8 @@ class Profile extends Component {
                 data-target="google"
                 disabled={
                   !(
-                    this.props.data.userData.tokens.length > 1 ||
-                    this.props.data.userData.password
+                    this.store.reducer.data.userData.tokens.length > 1 ||
+                    this.store.reducer.data.userData.password
                   )
                 }
               >
@@ -179,8 +199,8 @@ class Profile extends Component {
             )
           ) : null}
 
-          {Object.keys(this.props.data || {}).length > 0 ? (
-            this.props.data.userData.twitter ? (
+          {Object.keys(this.store.reducer.data || {}).length > 0 ? (
+            this.store.reducer.data.userData.twitter ? (
               <button
                 type="button"
                 className="uk-button uk-button-danger uk-width-expand uk-margin-small-bottom"
@@ -188,8 +208,8 @@ class Profile extends Component {
                 data-target="twitter"
                 disabled={
                   !(
-                    this.props.data.userData.tokens.length > 1 ||
-                    this.props.data.userData.password
+                    this.store.reducer.data.userData.tokens.length > 1 ||
+                    this.store.reducer.data.userData.password
                   )
                 }
               >
@@ -218,31 +238,3 @@ class Profile extends Component {
     );
   }
 }
-
-const changePassword = (o, n) => {
-  return mutations.requestPasswordChange(o, n);
-};
-
-const unlinkAuth = toUnlink => {
-  return mutations.requestAuthUnlink(toUnlink);
-};
-const addMessage = m => {
-  return mutations.addMessage(m);
-};
-
-const mapStateToProps = ({ auth, messages, data }) => ({
-  auth,
-  messages,
-  data
-});
-
-const mapDispatchToProps = {
-  changePassword,
-  unlinkAuth,
-  addMessage
-};
-
-export const ConnectedProfile = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Profile);

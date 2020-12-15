@@ -67,12 +67,12 @@ export const requestAuthUnlink = (toUnlink) => ({
   toUnlink,
 });
 
-export const stateMainReducer = (state, action) => {
+export const stateMainReducer = (state: MainState, action: Action) => {
   switch (action.type) {
     case Actions.DELETE_MESSAGE:
       return {
         ...state,
-        messages: state.messages.filter((m) => m.id !== action.payload),
+        messages: state.messages.filter((m) => m !== action.payload),
       };
     default:
       return state;
@@ -99,12 +99,30 @@ export enum Actions {
   REQUEST_ACCOUNT_CREATION = `REQUEST_ACCOUNT_CREATION`,
   REQUEST_SESSION_FETCH = `REQUEST_SESSION_FETCH`,
   REQUEST_LOGOUT = `REQUEST_LOGOUT`,
-  WAITING = `WAITING`,
+  DO_LOGIN = `DO_LOGIN`,
+  DO_AUTH_UNLINK = `DO_AUTH_UNLINK`,
+  DO_PASSWORD_CHANGE = `DO_PASSWORD_CHANGE`,
   REQUEST_AUTH_UNLINK = `REQUEST_AUTH_UNLINK`,
   REQUEST_PASSWORD_CHANGE = `REQUEST_PASSWORD_CHANGE`,
 }
 
-export const defaultMainState = {
+export interface Action {
+  type: Actions;
+  payload: any;
+}
+
+export interface MainState {
+  data: {};
+  auth: AuthState;
+  messages: Message[]; //TODO: type
+}
+
+export interface Message {
+  error: boolean;
+  msg: string;
+}
+
+export const defaultMainState: MainState = {
   data: {},
   auth: AuthState.WAITING,
   messages: [],

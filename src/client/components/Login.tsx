@@ -1,23 +1,27 @@
 import React, { Component } from "react";
-import * as mutations from "../store/mutations";
 import { connect } from "react-redux";
+import { MainContext, MainStore } from "./layout/ProviderWithRouter";
+import { Actions } from "../store";
 
-class Login extends Component {
-  constructor(...args) {
-    super(...args);
+export class Login extends Component {
+  store: MainStore;
+  state: { email: string; password: string } = { email: "", password: "" }; // local state
 
-    this.state = {
-      email: "",
-      password: ""
-    };
+  constructor(args) {
+    super(args);
+
+    this.store = React.useContext(MainContext);
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
   submitLogin = () => {
-    this.props.authenticateUser(this.state.email, this.state.password);
+    this.store.dispatch({
+      type: Actions.DO_LOGIN,
+      payload: { email: this.state.email, password: this.state.password },
+    });
   };
 
   render() {
@@ -96,21 +100,3 @@ class Login extends Component {
     );
   }
 }
-
-const authenticateUser = (e, p) => {
-  return mutations.requestAuth(e, p);
-};
-
-const mapStateToProps = ({ auth, messages }) => ({
-  auth,
-  messages
-});
-
-const mapDispatchToProps = {
-  authenticateUser
-};
-
-export const ConnectedLogin = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Login);
