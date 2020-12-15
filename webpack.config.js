@@ -1,5 +1,7 @@
 const path = require("path");
 const config = require("./config/config.json");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+
 module.exports = {
   mode: "development",
   entry: path.resolve(__dirname, "src", "client"),
@@ -10,7 +12,12 @@ module.exports = {
     publicPath: "/",
   },
   resolve: {
-    extensions: [".js", ".jsx", ".tsx"],
+    extensions: [".js", ".jsx", ".tsx", ".ts"],
+    modules: [
+      path.resolve(__dirname, "src", "client"),
+      path.resolve(__dirname, "node_modules"),
+    ],
+    plugins: [new TsconfigPathsPlugin({ configFile: "tsconfig.client.json" })],
   },
   devServer: {
     historyApiFallback: true,
@@ -29,6 +36,12 @@ module.exports = {
       {
         test: /\.jsx?/,
         loader: "babel-loader",
+      },
+      {
+        test: /\.(ts|tsx)?$/,
+        use: {
+          loader: "ts-loader",
+        },
       },
       {
         test: /\.css$/i,

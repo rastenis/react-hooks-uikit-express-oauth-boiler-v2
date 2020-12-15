@@ -38,19 +38,15 @@ class ProviderWithRouter extends React.Component<ProviderWithRouterProps> {
     this._dispatch = mainReducerMiddleware(dispatchToMainReducer);
 
     // initialize session
-    this.dispatch({
+    this._dispatch({
       type: Actions.REQUEST_SESSION_FETCH,
     });
-  }
-
-  public get dispatch() {
-    return this._dispatch;
   }
 
   render() {
     return (
       <MainContext.Provider
-        value={{ dispatch: this.dispatch, state: this.state }}
+        value={{ dispatch: this._dispatch, state: this._state }}
       >
         {this.props.children}
       </MainContext.Provider>

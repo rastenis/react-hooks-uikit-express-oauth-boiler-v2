@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { AuthState } from "../store";
+import { AuthState } from "../store/index";
 import { MainContext, MainStore } from "./layout/ProviderWithRouter";
 
 export interface DashboardProps {

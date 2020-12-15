@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Messages } from "../components/layout/Messages";
 
 export const REQUEST_AUTH = `REQUEST_AUTH`;
 export const PROCESSING_AUTH = `PROCESSING_AUTH`;
