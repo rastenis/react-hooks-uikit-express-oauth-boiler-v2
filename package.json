@@ -7,7 +7,7 @@
     "deploy": "echo \"Error: no deployment options yet\" && exit 1",
     "build": "webpack --optimization-minimize --optimization-node-env production && tsc",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:server": "ts-node src/server/index.ts -P tsconfig.json",
+    "dev:server": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node src/server/index.ts'",
     "dev:client": "webpack serve --host 0.0.0.0",
     "start": "cross-env NODE_ENV=production node dist/server/src/server/index",
     "launch": "npm run build; npm run start",

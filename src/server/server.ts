@@ -112,12 +112,18 @@ app.get(
 // data fetch route (initially just a session ping to avoid localStorage, now user mock data preload has been added)
 app.get("/api/data", (req, res) => {
   // processing messages
-  const m = Object.assign({}, req.session.message);
-  const messages = [m];
+
+  const messages = [] as { error: boolean; msg: string }[];
+
+  if (req.session.message) {
+    const m = Object.assign({}, req.session.message);
+    messages.push(m);
+  }
+
   delete req.session.message;
 
   if (!req.session.user) {
-    return res.send({ auth: false, message: m });
+    return res.send({ auth: false, messages });
   }
 
   // returning async data

@@ -1,5 +1,4 @@
-import { Store } from "express-session";
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Actions } from "../../store";
 import { MainContext, MainStore } from "./ProviderWithRouter";
 
@@ -7,46 +6,36 @@ interface MessageProps {
   message: any;
 }
 
-export class Message extends Component<MessageProps> {
-  store: MainStore;
-  state: { closeTimeout?: number | undefined } = {}; // local state
+export const Message = (props: MessageProps) => {
+  const store = React.useContext(MainContext);
 
-  constructor(args) {
-    super(args);
-    this.store = React.useContext(MainContext);
-    this.state = {};
-  }
+  // state for this component only
+  const [localState, setLocalState] = useState({
+    timeoutHandle: {} as NodeJS.Timeout,
+  });
 
-  componentDidMount() {
-    this.setState({
-      closer: setTimeout(() => {
-        this.store.dispatch({
+  const cancel = () => {
+    setLocalState({
+      timeoutHandle: setTimeout(() => {
+        store.dispatch({
           type: Actions.DELETE_MESSAGE,
-          payload: this.props.message.id,
+          payload: props.message.id,
         });
       }, 3000),
     });
-  }
-
-  setCancelled = () => {
-    clearTimeout(this.state.closeTimeout);
   };
 
-  render() {
-    return (
-      <div
-        className={`${
-          this.props.message.error ? "uk-alert-danger" : "uk-alert-primary"
-        }`}
-        uk-alert="true"
-      >
-        <a
-          className="uk-alert-close"
-          uk-close="true"
-          onClick={this.setCancelled}
-        />
-        <p>{this.props.message.msg}</p>
-      </div>
-    );
-  }
-}
+  clearTimeout(localState.timeoutHandle);
+
+  return (
+    <div
+      className={`${
+        props.message.error ? "uk-alert-danger" : "uk-alert-primary"
+      }`}
+      uk-alert="true"
+    >
+      <a className="uk-alert-close" uk-close="true" onClick={cancel} />
+      <p>{props.message.msg}</p>
+    </div>
+  );
+};
