@@ -26,7 +26,7 @@ const handleRequestError = (dispatch, error) => {
 export const mainReducerMiddleware = (dispatch, history) =>
   async function middleware(action: Action) {
     switch (action.type) {
-      case Actions.REQUEST_SESSION_FETCH: {
+      case Actions.DO_SESSION_FETCH: {
         const [error, res] = await to(axios.get(`/api/data`));
         handleRequestError(dispatch, error);
 
@@ -52,6 +52,26 @@ export const mainReducerMiddleware = (dispatch, history) =>
         break;
       }
 
+      case Actions.DO_PASSWORD_CHANGE: {
+        const { oldPassword, newPassword } = action.payload;
+
+        const [error, res] = await to(
+          axios.post(`/api/changePassword`, {
+            oldPassword,
+            newPassword,
+          })
+        );
+        handleRequestError(dispatch, error);
+
+        // show message
+        dispatch({
+          type: Actions.ADD_MESSAGE,
+          payload: { error: false, msg: res?.data.msg },
+        });
+
+        break;
+      }
+
       case Actions.DO_REGISTRATION: {
         const { email, password } = action.payload;
 
@@ -63,7 +83,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
         );
         handleRequestError(dispatch, error);
 
-        await middleware({ type: Actions.REQUEST_SESSION_FETCH });
+        await middleware({ type: Actions.DO_SESSION_FETCH });
 
         // set profile
         dispatch({
@@ -92,7 +112,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
         );
         handleRequestError(dispatch, error);
 
-        await middleware({ type: Actions.REQUEST_SESSION_FETCH });
+        await middleware({ type: Actions.DO_SESSION_FETCH });
 
         // set profile
         dispatch({
@@ -115,7 +135,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
         break;
       }
 
-      case Actions.REQUEST_LOGOUT: {
+      case Actions.DO_LOGOUT: {
         await axios.post(`/api/logout`);
 
         // removing user data and auth, but keeping messages & auth state
@@ -180,15 +200,12 @@ export enum Actions {
   ADD_MESSAGE = `ADD_MESSAGE`,
   DELETE_MESSAGE = `DELETE_MESSAGE`,
   SET_STATE = `SET_STATE`,
-  REQUEST_ACCOUNT_CREATION = `REQUEST_ACCOUNT_CREATION`,
-  REQUEST_SESSION_FETCH = `REQUEST_SESSION_FETCH`,
-  REQUEST_LOGOUT = `REQUEST_LOGOUT`,
+  DO_SESSION_FETCH = `DO_SESSION_FETCH`,
+  DO_LOGOUT = `DO_LOGOUT`,
   DO_LOGIN = `DO_LOGIN`,
   DO_AUTH_UNLINK = `DO_AUTH_UNLINK`,
   DO_PASSWORD_CHANGE = `DO_PASSWORD_CHANGE`,
   DO_REGISTRATION = "DO_REGISTRATION",
-  REQUEST_AUTH_UNLINK = `REQUEST_AUTH_UNLINK`,
-  REQUEST_PASSWORD_CHANGE = `REQUEST_PASSWORD_CHANGE`,
 }
 
 export interface Action {

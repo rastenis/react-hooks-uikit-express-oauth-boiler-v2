@@ -43,7 +43,7 @@ export const ProviderWithRouter = (props: ProviderWithRouterProps) => {
   useEffect(() => {
     // initialize session
     _dispatch({
-      type: Actions.REQUEST_SESSION_FETCH,
+      type: Actions.DO_SESSION_FETCH,
     });
   }, []);
 

@@ -45,7 +45,7 @@ export const Navigation = () => {
             <li>
               <a
                 className="uk-text-danger"
-                onClick={() => store.dispatch({ type: Actions.REQUEST_LOGOUT })}
+                onClick={() => store.dispatch({ type: Actions.DO_LOGOUT })}
               >
                 Logout
               </a>
