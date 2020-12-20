@@ -17,7 +17,7 @@ import mongoStore from "connect-mongo";
 import config from "../../config/config.json";
 import onlyUnAuth from "./routes/unAuth";
 import onlyAuth from "./routes/auth";
-import { User } from "./controllers/user";
+import { User, User as ControllerUser } from "./controllers/user";
 
 const MongoStore = mongoStore(session);
 const app = express();
@@ -32,6 +32,12 @@ declare module "express-session" {
       msg: string;
       error: boolean;
     };
+  }
+}
+
+declare global {
+  namespace Express {
+    interface User extends ControllerUser {}
   }
 }
 
@@ -122,34 +128,25 @@ app.get("/api/data", (req, res) => {
 
   delete req.session.message;
 
-  if (!req.session.user) {
+  if (!req.user) {
     return res.send({
       auth: false,
       messages,
-      people: Array.apply(null, Array(4)).map(() => {
-        return {
-          name: faker.name.findName(),
-          email: faker.internet.email(),
-          contact: faker.helpers.createCard(),
-        };
-      }),
     });
   }
 
   // returning async data
   return res.send({
     auth: true,
-    state: {
-      userData: req.session.user.data,
-      // mock some data
-      people: Array.apply(null, Array(4)).map(() => {
-        return {
-          name: faker.name.findName(),
-          email: faker.internet.email(),
-          contact: faker.helpers.createCard(),
-        };
-      }),
-    },
+    userData: req.user,
+    // mock some data
+    people: Array.apply(null, Array(4)).map(() => {
+      return {
+        name: faker.name.findName(),
+        email: faker.internet.email(),
+        contact: faker.helpers.createCard(),
+      };
+    }),
     messages,
   });
 });

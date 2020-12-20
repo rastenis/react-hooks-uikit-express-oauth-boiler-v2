@@ -17,14 +17,14 @@ const check = (req, res, next) => {
   return next();
 };
 
-router.post("/api/auth", check, async (req, res) => {
+router.post("/api/login", check, async (req, res) => {
   console.log(`LOGIN | requester: ${req.body.email}`);
 
   let [err, user] = await to(_promisifiedPassportAuthentication(req, res));
 
   if (err) {
     console.error(err);
-    return res.status(500).send("Authentication error!");
+    return res.status(401).send("Wrong credentials!");
   }
   if (!user) {
     // all failed logins default to the same error message

@@ -84,61 +84,114 @@ const handleRequestError = (dispatch, error) => {
  * @param dispatch the actual dispatch for mainReducer
  * @param history the history state
  */
-export const mainReducerMiddleware = (dispatch, history) => async (
-  action: Action
-) => {
-  switch (action.type) {
-    case Actions.REQUEST_SESSION_FETCH: {
-      const [error, res] = await to(axios.get(`/api/data`));
-      handleRequestError(dispatch, error);
+export const mainReducerMiddleware = (dispatch, history) =>
+  async function middleware(action: Action) {
+    switch (action.type) {
+      case Actions.REQUEST_SESSION_FETCH: {
+        const [error, res] = await to(axios.get(`/api/data`));
+        handleRequestError(dispatch, error);
 
-      const data = res?.data;
+        const data = res?.data;
 
-      const newState: MainState = {
-        data: {},
-        userData: data?.state?.userData,
-        people: data?.state?.people,
-        auth: data.auth ? AuthState.AUTHENTICATED : AuthState.NOT_AUTHENTICATED,
-        messages: [],
-      };
+        const newState: MainState = {
+          data: {},
+          userData: data?.userData,
+          people: data?.people,
+          auth: data.auth
+            ? AuthState.AUTHENTICATED
+            : AuthState.NOT_AUTHENTICATED,
+          messages: [],
+        };
 
-      // register server side messages, if any
-      if (data.messages) {
-        newState.messages.push(...data.messages);
+        // register server side messages, if any
+        if (data.messages) {
+          newState.messages.push(...data.messages);
+        }
+
+        dispatch({ type: Actions.SET_STATE, payload: newState });
+        break;
       }
 
-      dispatch({ type: Actions.SET_STATE, payload: newState });
+      case Actions.DO_REGISTRATION: {
+        const { email, password } = action.payload;
+
+        const [error, res] = await to(
+          axios.post(`/api/register`, {
+            email,
+            password,
+          })
+        );
+        handleRequestError(dispatch, error);
+
+        await middleware({ type: Actions.REQUEST_SESSION_FETCH });
+
+        // set profile
+        dispatch({
+          type: Actions.SET_STATE,
+          payload: res?.data.state,
+        });
+
+        // show message
+        dispatch({
+          type: Actions.ADD_MESSAGE,
+          payload: { error: false, msg: res?.data.msg },
+        });
+
+        history.push("/");
+        break;
+      }
+
+      case Actions.DO_LOGIN: {
+        const { email, password } = action.payload;
+
+        const [error, res] = await to(
+          axios.post(`/api/login`, {
+            email,
+            password,
+          })
+        );
+        handleRequestError(dispatch, error);
+
+        await middleware({ type: Actions.REQUEST_SESSION_FETCH });
+
+        // set profile
+        dispatch({
+          type: Actions.SET_STATE,
+          payload: res?.data.state,
+        });
+
+        // show message
+        dispatch({
+          type: Actions.ADD_MESSAGE,
+          payload: { error: false, msg: res?.data.msg },
+        });
+
+        dispatch({
+          type: Actions.SET_AUTH,
+          payload: AuthState.AUTHENTICATED,
+        });
+
+        history.push("/");
+        break;
+      }
+
+      case Actions.REQUEST_LOGOUT: {
+        await axios.post(`/api/logout`);
+
+        // removing user data and auth, but keeping messages & auth state
+        dispatch({
+          type: Actions.CLEAR_DATA,
+        });
+
+        history.push("/");
+        break;
+      }
+      default:
+        return dispatch(action);
     }
+  };
 
-    case Actions.DO_REGISTRATION: {
-      const { email, password } = action.payload;
-
-      const [error, res] = await to(
-        axios.post(`/api/register`, {
-          email,
-          password,
-        })
-      );
-      handleRequestError(dispatch, error);
-
-      dispatch({
-        type: Actions.SET_STATE,
-        payload: res?.data.state,
-      });
-
-      dispatch({
-        type: Actions.ADD_MESSAGE,
-        payload: { error: false, msg: res?.data.msg },
-      });
-
-      history.push("/");
-    }
-    default:
-      return dispatch(action);
-  }
-};
-
-export const mainReducer = (state: MainState, action: Action) => {
+export const mainReducer = (state: MainState, action: Action): MainState => {
   switch (action.type) {
     case Actions.DELETE_MESSAGE:
       return {
@@ -153,6 +206,16 @@ export const mainReducer = (state: MainState, action: Action) => {
       };
     case Actions.SET_STATE:
       return { ...state, ...action.payload };
+    case Actions.CLEAR_DATA:
+      return {
+        ...state,
+        auth: AuthState.NOT_AUTHENTICATED,
+        data: {},
+        people: [],
+        userData: {},
+      };
+    case Actions.SET_AUTH:
+      return { ...state, auth: action.payload };
     default:
       return state;
   }
@@ -168,6 +231,7 @@ export enum AuthState {
 
 export enum Actions {
   REQUEST_AUTH = `REQUEST_AUTH`,
+  SET_AUTH = `SET_AUTH`,
   PROCESSING_AUTH = `PROCESSING_AUTH`,
   AUTHENTICATING = `AUTHENTICATING`,
   AUTHENTICATED = `AUTHENTICATED`,

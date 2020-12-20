@@ -7,10 +7,9 @@ const SALT_ROUDS = 10;
 export class User {
   _meta: any;
   data: any;
-  _data: any;
 
   constructor(data?) {
-    if (!data || !data._id) {
+    if (!data?._id) {
       this.data = {
         tokens: [],
         profile: {},
@@ -31,7 +30,6 @@ export class User {
         this.data.profile = {};
       }
 
-      this._data = data;
       this._meta = {
         new: false,
       };
@@ -51,6 +49,11 @@ export class User {
     return hash;
   }
 
+  isHashed(password) {
+    if (!password) return false;
+    return password.split("$").length == 4;
+  }
+
   async saveUser() {
     if (this._meta.new) {
       // generating hashed password
@@ -65,10 +68,9 @@ export class User {
       return new User(inserted);
     }
 
-    if (this.data.isModified("password")) {
+    if (!this.isHashed(this.data.password)) {
       let hashed = await this.hashPassword(this.data.password);
       this.data.password = hashed;
-      this._data = this.data;
 
       const [err] = await to(
         db.User.updateOne(
@@ -85,7 +87,6 @@ export class User {
       }
       return this;
     } else {
-      this._data = this.data;
       let [err] = await to(
         db.User.findByIdAndUpdate(this.data._id, this.data, {}).exec()
       );
@@ -107,9 +108,5 @@ export class User {
       throw err;
     }
     return;
-  }
-
-  isModified(field) {
-    return this._data[field] !== this.data[field];
   }
 }

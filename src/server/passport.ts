@@ -9,7 +9,7 @@ import config from "../../config/config.json";
 import { User } from "./controllers/user";
 import to from "await-to-js";
 
-passport.serializeUser((user, done) => done(null, user.data._id));
+passport.serializeUser((user: User, done) => done(null, user.data._id));
 
 passport.deserializeUser(async (id, done) => {
   const [err, user] = await to(db.User.findById(id).exec());

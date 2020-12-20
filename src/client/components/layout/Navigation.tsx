@@ -20,7 +20,8 @@ export const Navigation = () => {
           <li>
             <NavLink
               exact
-              activeStyle={{ className: "uk-active", color: "black" }}
+              activeStyle={{ color: "black" }}
+              activeClassName="uk-active"
               to="/"
             >
               Dashboard
@@ -34,7 +35,8 @@ export const Navigation = () => {
             <li>
               <NavLink
                 exact
-                activeStyle={{ className: "uk-active", color: "black" }}
+                activeStyle={{ color: "black" }}
+                activeClassName="uk-active"
                 to="/profile"
               >
                 Profile
@@ -54,7 +56,8 @@ export const Navigation = () => {
             <li>
               <NavLink
                 exact
-                activeStyle={{ className: "uk-active", color: "black" }}
+                activeStyle={{ color: "black" }}
+                activeClassName="uk-active"
                 to="/login"
               >
                 Login
@@ -63,7 +66,8 @@ export const Navigation = () => {
             <li>
               <NavLink
                 exact
-                activeStyle={{ className: "uk-active", color: "black" }}
+                activeStyle={{ color: "black" }}
+                activeClassName="uk-active"
                 to="/registration"
               >
                 Register

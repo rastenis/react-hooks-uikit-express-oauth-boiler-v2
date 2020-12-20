@@ -19,7 +19,7 @@ const check = (req, res, next) => {
 
 // route to unlink auth accounts
 router.post("/api/unlink", check, async (req, res) => {
-  let user = new User(req.session.user?.data);
+  let user = new User(req.user?.data);
 
   user.data.tokens = user.data.tokens.filter((t) => {
     return t.kind != req.body.toUnlink;
@@ -33,16 +33,16 @@ router.post("/api/unlink", check, async (req, res) => {
     return res.status(500).send("Internal server error.");
   }
 
-  req.session.user = savedUser;
+  req.user = savedUser;
 
   return res.send({
-    state: { userData: req.session.user.data },
+    state: { userData: req.user.data },
     msg: "Successfully unlinked!",
   });
 });
 
 router.post("/api/changePassword", check, async (req, res) => {
-  let user = new User(req.session.user?.data);
+  let user = new User(req.user?.data);
 
   let [e, matched] = await to(user.verifyPassword(req.body.oldPassword));
 
