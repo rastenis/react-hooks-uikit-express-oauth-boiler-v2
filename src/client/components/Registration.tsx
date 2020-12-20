@@ -1,45 +1,45 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Actions } from "../store";
-import { MainContext, MainStore } from "./layout/ProviderWithRouter";
+import { MainContext } from "./layout/ProviderWithRouter";
 
-export class Registration extends Component {
-  store: MainStore;
-  state: {
-    email: string;
-    password: string;
-    passwordConf: string;
-    errors: string[];
-  } = { email: "", password: "", passwordConf: "", errors: [] }; // local state
+export const Registration = () => {
+  const store = React.useContext(MainContext);
 
-  constructor(args) {
-    super(args);
-    this.store = React.useContext(MainContext);
-  }
+  // state for this component only
+  const [localState, setLocalState] = useState({
+    email: "",
+    password: "",
+    passwordConf: "",
+    errors: [] as string[],
+  });
 
-  onChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+  const onChange = (e) => {
+    setLocalState({ ...localState, [e.target.name]: e.target.value });
   };
 
-  submitRegistration = () => {
+  const submitRegistration = () => {
     // clearing previous errors
-    this.state.errors = [];
-
+    setLocalState({ ...localState, errors: [] });
     // quick check for email validity
-    if (!/\S+@\S+\.\S+/.test(this.state.email)) {
-      this.store.dispatch({
+    if (!/\S+@\S+\.\S+/.test(localState.email)) {
+      store.dispatch({
         type: Actions.ADD_MESSAGE,
         payload: {
           error: true,
           msg: "Invalid email address!",
         },
       });
-      this.state.errors.push("email");
+
+      setLocalState({
+        ...localState,
+        errors: [...localState.errors, "password"],
+      });
       return;
     }
 
     // invalid password length
-    if (this.state.password.length < 5 || this.state.password.length > 100) {
-      this.store.dispatch({
+    if (localState.password.length < 5 || localState.password.length > 100) {
+      store.dispatch({
         type: Actions.ADD_MESSAGE,
         payload: {
           error: true,
@@ -47,13 +47,16 @@ export class Registration extends Component {
         },
       });
 
-      this.state.errors.push("password");
+      setLocalState({
+        ...localState,
+        errors: [...localState.errors, "password"],
+      });
       return;
     }
 
     // non-matching passwords
-    if (this.state.password != this.state.passwordConf) {
-      this.store.dispatch({
+    if (localState.password != localState.passwordConf) {
+      store.dispatch({
         type: Actions.ADD_MESSAGE,
         payload: {
           error: true,
@@ -61,96 +64,97 @@ export class Registration extends Component {
         },
       });
 
-      this.state.errors.push("password");
+      setLocalState({
+        ...localState,
+        errors: [...localState.errors, "password"],
+      });
       return;
     }
 
     // proceeding
-    this.store.dispatch({
+    store.dispatch({
       type: Actions.DO_REGISTRATION,
       payload: {
-        email: this.state.email,
-        password: this.state.password,
+        email: localState.email,
+        password: localState.password,
       },
     });
   };
 
-  render() {
-    return (
-      <div>
-        <h1 className="uk-header-medium uk-text-center">Register</h1>
-        <hr />
-        <form
-          style={{ width: "60%" }}
-          className="uk-form-stacked uk-container uk-container-center"
-        >
-          <div className="uk-margin">
-            <label className="uk-form-label" htmlFor="form-stacked-text">
-              Email
-            </label>
-            <div className="uk-form-controls uk-margin-small-bottom">
-              <input
-                className={`uk-input ${
-                  this.state.errors.find((e) => e == "email")
-                    ? "uk-form-danger"
-                    : null
-                }`}
-                id="form-stacked-text"
-                type="text"
-                placeholder="Email"
-                name="email"
-                onChange={this.onChange}
-                value={this.state.email}
-              />
-            </div>
-            <label className="uk-form-label" htmlFor="form-stacked-text">
-              Password
-            </label>
-            <div className="uk-form-controls uk-margin-small-bottom">
-              <input
-                className={`uk-input ${
-                  this.state.errors.find((e) => e == "password")
-                    ? "uk-form-danger"
-                    : null
-                }`}
-                id="form-stacked-text"
-                name="password"
-                type="password"
-                placeholder="Password"
-                onChange={this.onChange}
-                value={this.state.password}
-              />
-            </div>
-            <label className="uk-form-label" htmlFor="form-stacked-text">
-              Confirm Password
-            </label>
-            <div className="uk-form-controls uk-margin-small-bottom">
-              <input
-                className={`uk-input ${
-                  this.state.errors.find((e) => e == "password")
-                    ? "uk-form-danger"
-                    : null
-                }`}
-                id="form-stacked-text"
-                name="passwordConf"
-                type="password"
-                placeholder="Confirm password"
-                onChange={this.onChange}
-                value={this.state.passwordConf}
-              />
-            </div>
-            <div className="uk-form-controls uk-margin-small-bottom">
-              <button
-                type="button"
-                className="uk-button uk-button-primary uk-width-expand"
-                onClick={this.submitRegistration}
-              >
-                Submit
-              </button>
-            </div>
+  return (
+    <div>
+      <h1 className="uk-header-medium uk-text-center">Register</h1>
+      <hr />
+      <form
+        style={{ width: "60%" }}
+        className="uk-form-stacked uk-container uk-container-center"
+      >
+        <div className="uk-margin">
+          <label className="uk-form-label" htmlFor="form-stacked-text">
+            Email
+          </label>
+          <div className="uk-form-controls uk-margin-small-bottom">
+            <input
+              className={`uk-input ${
+                localState.errors.find((e) => e == "email")
+                  ? "uk-form-danger"
+                  : null
+              }`}
+              id="form-stacked-text"
+              type="text"
+              placeholder="Email"
+              name="email"
+              onChange={onChange}
+              value={localState.email}
+            />
           </div>
-        </form>
-      </div>
-    );
-  }
-}
+          <label className="uk-form-label" htmlFor="form-stacked-text">
+            Password
+          </label>
+          <div className="uk-form-controls uk-margin-small-bottom">
+            <input
+              className={`uk-input ${
+                localState.errors.find((e) => e == "password")
+                  ? "uk-form-danger"
+                  : null
+              }`}
+              id="form-stacked-text"
+              name="password"
+              type="password"
+              placeholder="Password"
+              onChange={onChange}
+              value={localState.password}
+            />
+          </div>
+          <label className="uk-form-label" htmlFor="form-stacked-text">
+            Confirm Password
+          </label>
+          <div className="uk-form-controls uk-margin-small-bottom">
+            <input
+              className={`uk-input ${
+                localState.errors.find((e) => e == "password")
+                  ? "uk-form-danger"
+                  : null
+              }`}
+              id="form-stacked-text"
+              name="passwordConf"
+              type="password"
+              placeholder="Confirm password"
+              onChange={onChange}
+              value={localState.passwordConf}
+            />
+          </div>
+          <div className="uk-form-controls uk-margin-small-bottom">
+            <button
+              type="button"
+              className="uk-button uk-button-primary uk-width-expand"
+              onClick={submitRegistration}
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};

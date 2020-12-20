@@ -30,7 +30,11 @@ export const Profile = () => {
           msg: "Passwords do not match!",
         },
       });
-      localState.errors.push("password");
+
+      setLocalState({
+        ...localState,
+        errors: [...localState.errors, "password"],
+      });
       return;
     }
 
@@ -46,7 +50,10 @@ export const Profile = () => {
           msg: "Password must be between 5 and a 100 characters!",
         },
       });
-      localState.errors.push("password");
+      setLocalState({
+        ...localState,
+        errors: [...localState.errors, "password"],
+      });
       return;
     }
 
@@ -60,9 +67,12 @@ export const Profile = () => {
     });
 
     // resetting form
-    localState.newPassword = "";
-    localState.newPasswordConf = "";
-    localState.oldPassword = "";
+    setLocalState({
+      ...localState,
+      oldPassword: "",
+      newPassword: "",
+      newPasswordConf: "",
+    });
   };
 
   const submitUnlinkAuth = (e) => {
