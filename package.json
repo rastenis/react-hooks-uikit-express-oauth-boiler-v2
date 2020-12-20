@@ -68,6 +68,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.5.5",
     "@types/express-session": "^1.17.3",
+    "@types/react-router-dom": "^5.1.6",
     "axios-mock-adapter": "^1.17.0",
     "babel-jest": "^26.6.3",
     "babel-loader": "^8.0.6",

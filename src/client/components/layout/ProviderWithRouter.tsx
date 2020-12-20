@@ -1,5 +1,5 @@
-import React from "react";
-import { withRouter } from "react-router-dom";
+import React, { useEffect } from "react";
+import { withRouter, useHistory } from "react-router-dom";
 import {
   defaultMainState,
   Actions,
@@ -20,31 +20,37 @@ export const MainContext = React.createContext<MainStore>({
     messages: [],
     userData: {},
   },
+  history: (undefined as unknown) as History,
 });
 
 type ProviderWithRouterProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
-let initialDispatchDone = false;
-
+/**
+ * This instantiates the main store, and the history.
+ * @param props contians child nodes
+ */
 export const ProviderWithRouter = (props: ProviderWithRouterProps) => {
   const [_state, dispatchToMainReducer] = React.useReducer(
     mainReducer,
     defaultMainState
   );
-  const _dispatch = mainReducerMiddleware(dispatchToMainReducer);
+  const _history = useHistory();
+  const _dispatch = mainReducerMiddleware(dispatchToMainReducer, _history);
 
-  if (!initialDispatchDone) {
+  // only on initial render.
+  useEffect(() => {
     // initialize session
     _dispatch({
       type: Actions.REQUEST_SESSION_FETCH,
     });
-    initialDispatchDone = true;
-  }
+  }, []);
 
   return (
-    <MainContext.Provider value={{ dispatch: _dispatch, state: _state }}>
+    <MainContext.Provider
+      value={{ dispatch: _dispatch, state: _state, history: _history }}
+    >
       {props.children}
     </MainContext.Provider>
   );

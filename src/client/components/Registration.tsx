@@ -17,9 +17,10 @@ export const Registration = () => {
     setLocalState({ ...localState, [e.target.name]: e.target.value });
   };
 
-  const submitRegistration = () => {
+  const submitRegistration = async () => {
     // clearing previous errors
-    setLocalState({ ...localState, errors: [] });
+    const newState = { ...localState, errors: [] };
+
     // quick check for email validity
     if (!/\S+@\S+\.\S+/.test(localState.email)) {
       store.dispatch({
@@ -31,8 +32,8 @@ export const Registration = () => {
       });
 
       setLocalState({
-        ...localState,
-        errors: [...localState.errors, "password"],
+        ...newState,
+        errors: ["email"],
       });
       return;
     }
@@ -48,8 +49,8 @@ export const Registration = () => {
       });
 
       setLocalState({
-        ...localState,
-        errors: [...localState.errors, "password"],
+        ...newState,
+        errors: ["password"],
       });
       return;
     }
@@ -65,11 +66,15 @@ export const Registration = () => {
       });
 
       setLocalState({
-        ...localState,
-        errors: [...localState.errors, "password"],
+        ...newState,
+        errors: ["password"],
       });
       return;
     }
+
+    setLocalState({
+      ...newState,
+    });
 
     // proceeding
     store.dispatch({

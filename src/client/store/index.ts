@@ -1,3 +1,4 @@
+import to from "await-to-js";
 import axios from "axios";
 
 export const REQUEST_AUTH = `REQUEST_AUTH`;
@@ -67,11 +68,31 @@ export const requestAuthUnlink = (toUnlink) => ({
   toUnlink,
 });
 
-// this is for handling async actions, and then passiing the result on to the reducer, which is synchronous
-export const mainReducerMiddleware = (dispatch) => async (action: Action) => {
+const handleRequestError = (dispatch, error) => {
+  if (!error) {
+    return;
+  }
+  dispatch({
+    type: Actions.ADD_MESSAGE,
+    payload: { error: true, msg: error.response.data },
+  });
+  throw new Error(error.response?.data ?? error.response);
+};
+
+/**
+ * This is for handling async actions, and then passiing the result on to the mainReducer, which is synchronous
+ * @param dispatch the actual dispatch for mainReducer
+ * @param history the history state
+ */
+export const mainReducerMiddleware = (dispatch, history) => async (
+  action: Action
+) => {
   switch (action.type) {
     case Actions.REQUEST_SESSION_FETCH: {
-      const { data } = await axios.get(`/api/data`);
+      const [error, res] = await to(axios.get(`/api/data`));
+      handleRequestError(dispatch, error);
+
+      const data = res?.data;
 
       const newState: MainState = {
         data: {},
@@ -88,6 +109,30 @@ export const mainReducerMiddleware = (dispatch) => async (action: Action) => {
 
       dispatch({ type: Actions.SET_STATE, payload: newState });
     }
+
+    case Actions.DO_REGISTRATION: {
+      const { email, password } = action.payload;
+
+      const [error, res] = await to(
+        axios.post(`/api/register`, {
+          email,
+          password,
+        })
+      );
+      handleRequestError(dispatch, error);
+
+      dispatch({
+        type: Actions.SET_STATE,
+        payload: res?.data.state,
+      });
+
+      dispatch({
+        type: Actions.ADD_MESSAGE,
+        payload: { error: false, msg: res?.data.msg },
+      });
+
+      history.push("/");
+    }
     default:
       return dispatch(action);
   }
@@ -100,8 +145,14 @@ export const mainReducer = (state: MainState, action: Action) => {
         ...state,
         messages: state.messages.filter((m) => m !== action.payload),
       };
+
+    case Actions.ADD_MESSAGE:
+      return {
+        ...state,
+        messages: [...state.messages, action.payload],
+      };
     case Actions.SET_STATE:
-      return action.payload;
+      return { ...state, ...action.payload };
     default:
       return state;
   }
@@ -153,6 +204,7 @@ export interface MainState {
 export interface MainStore {
   dispatch: (action: Action) => Promise<any>;
   state: MainState;
+  history: any;
 }
 
 export interface Message {
@@ -166,7 +218,7 @@ export interface Person {
   email: string;
   contact: {
     phone: string;
-    company: any;
+    company: { name: string; catchPhrase: string };
     address: {
       streetA: string;
       streetB: string;

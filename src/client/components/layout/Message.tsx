@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { Actions } from "../../store";
 import { MainContext } from "./ProviderWithRouter";
 
@@ -14,18 +14,20 @@ export const Message = (props: MessageProps) => {
     timeoutHandle: {} as NodeJS.Timeout,
   });
 
-  const cancel = () => {
+  useEffect(() => {
     setLocalState({
       timeoutHandle: setTimeout(() => {
         store.dispatch({
           type: Actions.DELETE_MESSAGE,
-          payload: props.message.id,
+          payload: props.message,
         });
       }, 3000),
     });
-  };
+  }, []);
 
-  clearTimeout(localState.timeoutHandle);
+  const cancel = () => {
+    clearTimeout(localState.timeoutHandle);
+  };
 
   return (
     <div
