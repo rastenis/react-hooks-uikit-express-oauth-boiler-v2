@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
-import { AuthState } from "../store/index";
-import { MainContext, MainStore } from "./layout/ProviderWithRouter";
+import { AuthState, MainStore } from "../store/index";
+import { MainContext } from "./layout/ProviderWithRouter";
 
 export interface DashboardProps {
   auth: AuthState;
@@ -23,8 +23,8 @@ export const Dashboard = () => {
               className="   uk-position-center"
               data-uk-spinner={"ratio: 3"}
             />
-          ) : store.state.data.people ? ( // listing out people (if data contains people to list)
-            store.state.data.people.map((person, index) => {
+          ) : store.state.people ? ( // listing out people (if data contains people to list)
+            store.state.people.map((person, index) => {
               return (
                 <li key={index}>
                   {person.name}{" "}

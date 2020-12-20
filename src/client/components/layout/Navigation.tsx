@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
-import { MainContext, MainStore } from "./ProviderWithRouter";
+import { MainContext } from "./ProviderWithRouter";
 import { Actions, AuthState } from "../../store";
 
 export const Navigation = () => {
-  const store: MainStore = React.useContext(MainContext);
+  const store = React.useContext(MainContext);
 
   return (
     <nav className="uk-navbar-container uk-navbar" uk-navbar="true">
@@ -43,7 +43,7 @@ export const Navigation = () => {
             <li>
               <a
                 className="uk-text-danger"
-                onClick={store.dispatch({ type: Actions.REQUEST_LOGOUT })}
+                onClick={() => store.dispatch({ type: Actions.REQUEST_LOGOUT })}
               >
                 Logout
               </a>

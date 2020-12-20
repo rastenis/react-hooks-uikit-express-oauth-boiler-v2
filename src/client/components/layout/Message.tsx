@@ -1,6 +1,6 @@
 import React, { Component, useState } from "react";
 import { Actions } from "../../store";
-import { MainContext, MainStore } from "./ProviderWithRouter";
+import { MainContext } from "./ProviderWithRouter";
 
 interface MessageProps {
   message: any;

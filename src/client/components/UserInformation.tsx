@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import { NavLink } from "react-router-dom";
-import { MainContext, MainStore } from "./layout/ProviderWithRouter";
+import { MainStore } from "../store";
+import { MainContext } from "./layout/ProviderWithRouter";
 
 export const UserInformation = ({ match }) => {
   const store: MainStore = React.useContext(MainContext);

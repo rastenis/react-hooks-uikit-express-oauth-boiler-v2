@@ -123,7 +123,17 @@ app.get("/api/data", (req, res) => {
   delete req.session.message;
 
   if (!req.session.user) {
-    return res.send({ auth: false, messages });
+    return res.send({
+      auth: false,
+      messages,
+      people: Array.apply(null, Array(4)).map(() => {
+        return {
+          name: faker.name.findName(),
+          email: faker.internet.email(),
+          contact: faker.helpers.createCard(),
+        };
+      }),
+    });
   }
 
   // returning async data

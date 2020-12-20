@@ -5,17 +5,21 @@ import {
   Actions,
   mainReducer,
   mainReducerMiddleware,
+  AuthState,
+  Action,
+  MainStore,
 } from "../../store/index";
-
-export interface MainStore {
-  dispatch: any;
-  state: any;
-}
 
 // Make a context
 export const MainContext = React.createContext<MainStore>({
-  dispatch: null,
-  state: null,
+  dispatch: async (action: Action) => {}, //placeholder. This gets populated by ProviderWithRouter.
+  state: {
+    auth: AuthState.WAITING,
+    data: {},
+    people: [],
+    messages: [],
+    userData: {},
+  },
 });
 
 type ProviderWithRouterProps = {

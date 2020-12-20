@@ -73,7 +73,6 @@ export const mainReducerMiddleware = (dispatch) => async (action: Action) => {
     case Actions.REQUEST_SESSION_FETCH: {
       const { data } = await axios.get(`/api/data`);
 
-      console.log(data);
       const newState: MainState = {
         data: {},
         userData: data?.state?.userData,
@@ -89,6 +88,8 @@ export const mainReducerMiddleware = (dispatch) => async (action: Action) => {
 
       dispatch({ type: Actions.SET_STATE, payload: newState });
     }
+    default:
+      return dispatch(action);
   }
 };
 
@@ -149,6 +150,11 @@ export interface MainState {
   userData: any;
 }
 
+export interface MainStore {
+  dispatch: (action: Action) => Promise<any>;
+  state: MainState;
+}
+
 export interface Message {
   error: boolean;
   msg: string;
@@ -156,13 +162,14 @@ export interface Message {
 
 // example data object - Person
 export interface Person {
+  name: string;
   email: string;
   contact: {
     phone: string;
-    company: string;
+    company: any;
     address: {
-      line1: string;
-      line2: string;
+      streetA: string;
+      streetB: string;
       city: string;
       state: string;
       zipcode: string;

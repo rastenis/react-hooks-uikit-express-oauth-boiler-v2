@@ -1,76 +1,70 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { MainContext, MainStore } from "./layout/ProviderWithRouter";
+import React, { Component, useState } from "react";
+import { MainContext } from "./layout/ProviderWithRouter";
 import { Actions } from "../store";
 
-export class Login extends Component {
-  store: MainStore;
-  state: { email: string; password: string } = { email: "", password: "" }; // local state
+export const Login = () => {
+  const store = React.useContext(MainContext);
 
-  constructor(args) {
-    super(args);
+  // state for this component only
+  const [localState, setLocalState] = useState({ email: "", password: "" });
 
-    this.store = React.useContext(MainContext);
-  }
-
-  onChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+  const onChange = (e) => {
+    setLocalState({ ...localState, [e.target.name]: e.target.value });
   };
 
-  submitLogin = () => {
-    this.store.dispatch({
+  const submitLogin = () => {
+    store.dispatch({
       type: Actions.DO_LOGIN,
-      payload: { email: this.state.email, password: this.state.password },
+      payload: { email: localState.email, password: localState.password },
     });
   };
 
-  render() {
-    return (
-      <div>
-        <h1 className="uk-header-medium uk-text-center">Login</h1>
-        <hr />
-        <form
-          style={{ width: "60%" }}
-          className="uk-form-stacked uk-container uk-container-center"
-        >
-          <div className="uk-margin">
-            <label className="uk-form-label" htmlFor="form-stacked-text">
-              Email
-            </label>
-            <div className="uk-form-controls uk-margin-small-bottom">
-              <input
-                className="uk-input"
-                id="form-stacked-text"
-                type="text"
-                placeholder="Email"
-                name="email"
-                onChange={this.onChange}
-                value={this.state.email}
-              />
-            </div>
-            <label className="uk-form-label" htmlFor="form-stacked-text">
-              Password
-            </label>
-            <div className="uk-form-controls uk-margin-small-bottom">
-              <input
-                className="uk-input"
-                id="form-stacked-text"
-                name="password"
-                type="password"
-                placeholder="Password"
-                onChange={this.onChange}
-                value={this.state.password}
-              />
-            </div>
-            <div className="uk-form-controls uk-margin-small-bottom">
-              <button
-                type="button"
-                className="uk-button uk-button-secondary uk-width-expand uk-margin-small-bottom"
-                onClick={this.submitLogin}
-              >
-                Submit
-              </button>
-              {/* <a
+  return (
+    <div>
+      <h1 className="uk-header-medium uk-text-center">Login</h1>
+      <hr />
+      <form
+        style={{ width: "60%" }}
+        className="uk-form-stacked uk-container uk-container-center"
+      >
+        <div className="uk-margin">
+          <label className="uk-form-label" htmlFor="form-stacked-text">
+            Email
+          </label>
+          <div className="uk-form-controls uk-margin-small-bottom">
+            <input
+              className="uk-input"
+              id="form-stacked-text"
+              type="text"
+              placeholder="Email"
+              name="email"
+              onChange={onChange}
+              value={localState.email}
+            />
+          </div>
+          <label className="uk-form-label" htmlFor="form-stacked-text">
+            Password
+          </label>
+          <div className="uk-form-controls uk-margin-small-bottom">
+            <input
+              className="uk-input"
+              id="form-stacked-text"
+              name="password"
+              type="password"
+              placeholder="Password"
+              onChange={onChange}
+              value={localState.password}
+            />
+          </div>
+          <div className="uk-form-controls uk-margin-small-bottom">
+            <button
+              type="button"
+              className="uk-button uk-button-secondary uk-width-expand uk-margin-small-bottom"
+              onClick={submitLogin}
+            >
+              Submit
+            </button>
+            {/* <a
                 type="button"
                 className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
                 href="/auth/google"
@@ -93,10 +87,9 @@ export class Login extends Component {
                 />
                 Sign in with Twitter
               </a> */}
-            </div>
           </div>
-        </form>
-      </div>
-    );
-  }
-}
+        </div>
+      </form>
+    </div>
+  );
+};
