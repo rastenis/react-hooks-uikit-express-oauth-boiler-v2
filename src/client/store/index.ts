@@ -93,6 +93,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
 
         const data = res?.data;
 
+        console.log(data);
         const newState: MainState = {
           data: {},
           userData: data?.userData,

@@ -17,7 +17,7 @@ import mongoStore from "connect-mongo";
 import config from "../../config/config.json";
 import onlyUnAuth from "./routes/unAuth";
 import onlyAuth from "./routes/auth";
-import { User, User as ControllerUser } from "./controllers/user";
+import { User, User as ControllerUser } from "./controllers/User";
 
 const MongoStore = mongoStore(session);
 const app = express();
@@ -138,7 +138,10 @@ app.get("/api/data", (req, res) => {
   // returning async data
   return res.send({
     auth: true,
-    userData: req.user,
+    userData: {
+      ...req.user.data,
+      password: req.user.data.password ? "<password>" : null, // this is to avoid leaking the password hash.
+    },
     // mock some data
     people: Array.apply(null, Array(4)).map(() => {
       return {

@@ -19,7 +19,7 @@ export const Profile = () => {
 
   const submitPasswordChange = () => {
     // clearing previous errors
-    setLocalState({ ...localState, errors: [] });
+    const newState = { ...localState, errors: [] };
 
     // non-matching passwords
     if (localState.newPassword != localState.newPasswordConf) {
@@ -32,8 +32,8 @@ export const Profile = () => {
       });
 
       setLocalState({
-        ...localState,
-        errors: [...localState.errors, "password"],
+        ...newState,
+        errors: ["password"],
       });
       return;
     }
@@ -51,8 +51,8 @@ export const Profile = () => {
         },
       });
       setLocalState({
-        ...localState,
-        errors: [...localState.errors, "password"],
+        ...newState,
+        errors: ["password"],
       });
       return;
     }
@@ -68,7 +68,7 @@ export const Profile = () => {
 
     // resetting form
     setLocalState({
-      ...localState,
+      ...newState,
       oldPassword: "",
       newPassword: "",
       newPasswordConf: "",
@@ -90,7 +90,7 @@ export const Profile = () => {
         style={{ width: "60%" }}
         className="uk-form-stacked uk-container uk-container-center"
       >
-        {Object.keys(store.state.data || {}).length ? (
+        {Object.keys(store.state.userData || {}).length ? (
           store.state.userData.password ? (
             <div className="uk-margin">
               <h3>Change Password</h3>

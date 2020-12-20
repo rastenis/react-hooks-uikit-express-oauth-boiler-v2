@@ -6,22 +6,22 @@ import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
 import db from "./db";
 import keysConf from "../../config/passportKeys.json";
 import config from "../../config/config.json";
-import { User } from "./controllers/user";
+import { User } from "./controllers/User";
 import to from "await-to-js";
 
+// serialize user in order to store in session in a lightweight manner
 passport.serializeUser((user: User, done) => done(null, user.data._id));
 
+// deserialize user back from session storage
 passport.deserializeUser(async (id, done) => {
   const [err, user] = await to(db.User.findById(id).exec());
   if (err) {
     console.error(err);
   }
-  return done(err, new User(user));
+  return done(err, new User(user?.toObject()));
 });
 
-/*
- * Sign in using Email and Password.
- */
+// LOCAL AUTH
 passport.use(
   new LocalStrategy(
     {
@@ -116,7 +116,7 @@ passport.use(
           return done(linkError);
         }
 
-        let [err] = await to(_promisifiedPassportLogin(req, linkedUser));
+        let [err] = await to(_promisifiedPassportLogin(req, linkedUser!));
 
         if (err) {
           req.session.message = {
@@ -233,7 +233,7 @@ passport.use(
           return done(linkError);
         }
 
-        let [err] = await to(_promisifiedPassportLogin(req, linkedUser));
+        let [err] = await to(_promisifiedPassportLogin(req, linkedUser!));
 
         if (err) {
           req.session.message = {
@@ -329,9 +329,12 @@ export const _promisifiedPassportAuthentication = (req, res): Promise<User> => {
   });
 };
 
-export const _promisifiedPassportLogin = (req, user): Promise<User> => {
+export const _promisifiedPassportLogin = (
+  req: Express.Request,
+  user: User
+): Promise<User> => {
   return new Promise((resolve, reject) => {
-    req.logIn(user, (err, user, info) => {
+    req.logIn(user, (err) => {
       if (err) {
         return reject(err);
       }
