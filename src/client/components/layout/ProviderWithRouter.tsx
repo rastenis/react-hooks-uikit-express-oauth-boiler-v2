@@ -22,36 +22,28 @@ type ProviderWithRouterProps = {
   children: React.ReactNode;
 };
 
-class ProviderWithRouter extends React.Component<ProviderWithRouterProps> {
-  _dispatch: any;
-  _state: any;
+let initialDispatchDone = false;
 
-  constructor(props) {
-    super(props);
+export const ProviderWithRouter = (props: ProviderWithRouterProps) => {
+  const [_state, dispatchToMainReducer] = React.useReducer(
+    mainReducer,
+    defaultMainState
+  );
+  const _dispatch = mainReducerMiddleware(dispatchToMainReducer);
 
-    // store
-    let dispatchToMainReducer;
-    [this._state, dispatchToMainReducer] = React.useReducer(
-      mainReducer,
-      defaultMainState
-    );
-    this._dispatch = mainReducerMiddleware(dispatchToMainReducer);
-
+  if (!initialDispatchDone) {
     // initialize session
-    this._dispatch({
+    _dispatch({
       type: Actions.REQUEST_SESSION_FETCH,
     });
+    initialDispatchDone = true;
   }
 
-  render() {
-    return (
-      <MainContext.Provider
-        value={{ dispatch: this._dispatch, state: this._state }}
-      >
-        {this.props.children}
-      </MainContext.Provider>
-    );
-  }
-}
+  return (
+    <MainContext.Provider value={{ dispatch: _dispatch, state: _state }}>
+      {props.children}
+    </MainContext.Provider>
+  );
+};
 
 export const provider = withRouter(ProviderWithRouter);

@@ -112,7 +112,8 @@ app.get(
 // data fetch route (initially just a session ping to avoid localStorage, now user mock data preload has been added)
 app.get("/api/data", (req, res) => {
   // processing messages
-  let m = Object.assign({}, req.session.message);
+  const m = Object.assign({}, req.session.message);
+  const messages = [m];
   delete req.session.message;
 
   if (!req.session.user) {
@@ -133,7 +134,7 @@ app.get("/api/data", (req, res) => {
         };
       }),
     },
-    message: m,
+    messages,
   });
 });
 

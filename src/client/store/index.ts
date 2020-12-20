@@ -73,19 +73,18 @@ export const mainReducerMiddleware = (dispatch) => async (action: Action) => {
     case Actions.REQUEST_SESSION_FETCH: {
       const { data } = await axios.get(`/api/data`);
 
+      console.log(data);
       const newState: MainState = {
         data: {},
-        userData: data.state.userData,
-        people: data.state.people,
-        auth: data.state.auth
-          ? AuthState.AUTHENTICATED
-          : AuthState.NOT_AUTHENTICATED,
+        userData: data?.state?.userData,
+        people: data?.state?.people,
+        auth: data.auth ? AuthState.AUTHENTICATED : AuthState.NOT_AUTHENTICATED,
         messages: [],
       };
 
       // register server side messages, if any
-      if (data.message) {
-        newState.messages.push(data.message);
+      if (data.messages) {
+        newState.messages.push(...data.messages);
       }
 
       dispatch({ type: Actions.SET_STATE, payload: newState });
@@ -139,7 +138,7 @@ export enum Actions {
 
 export interface Action {
   type: Actions;
-  payload: any;
+  payload?: any;
 }
 
 export interface MainState {
