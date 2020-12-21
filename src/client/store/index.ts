@@ -1,5 +1,5 @@
 import to from "await-to-js";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 // use this to inspect axios requests
 // axios.interceptors.request.use(request => {
@@ -7,16 +7,30 @@ import axios from "axios";
 //   return request;
 // });
 
-const handleRequestError = (dispatch, error) => {
+// Some central error and success/message handlers
+const handleRequestError = (dispatch, error: Error | null) => {
   if (!error) {
     return;
   }
+  const castError = <AxiosError>error;
   dispatch({
     type: Actions.ADD_MESSAGE,
-    payload: { error: true, msg: error.response.data },
+    payload: {
+      error: true,
+      msg: castError?.response?.data ?? "Something went wrong!",
+    },
   });
-  throw new Error(error.response?.data ?? error.response);
+  throw new Error(castError.response?.data ?? castError.response);
 };
+
+const handleRequestSuccess = (dispatch, res?: AxiosResponse) => {
+  dispatch({
+    type: Actions.ADD_MESSAGE,
+    payload: { error: false, msg: res?.data?.msg ?? "Operation successful!" },
+  });
+};
+
+// NOTE: you may want to make multiple reducers for more complex applications. Here, everything is lumped together for simplicity.
 
 /**
  * This is for handling async actions, and then passiing the result on to the mainReducer, which is synchronous
@@ -64,11 +78,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
         handleRequestError(dispatch, error);
 
         // show message
-        dispatch({
-          type: Actions.ADD_MESSAGE,
-          payload: { error: false, msg: res?.data.msg },
-        });
-
+        handleRequestSuccess(dispatch, res);
         break;
       }
 
@@ -92,11 +102,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
         });
 
         // show message
-        dispatch({
-          type: Actions.ADD_MESSAGE,
-          payload: { error: false, msg: res?.data.msg },
-        });
-
+        handleRequestSuccess(dispatch, res);
         history.push("/");
         break;
       }
@@ -121,10 +127,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
         });
 
         // show message
-        dispatch({
-          type: Actions.ADD_MESSAGE,
-          payload: { error: false, msg: res?.data.msg },
-        });
+        handleRequestSuccess(dispatch, res);
 
         dispatch({
           type: Actions.SET_AUTH,
@@ -191,10 +194,6 @@ export enum AuthState {
 export enum Actions {
   REQUEST_AUTH = `REQUEST_AUTH`,
   SET_AUTH = `SET_AUTH`,
-  PROCESSING_AUTH = `PROCESSING_AUTH`,
-  AUTHENTICATING = `AUTHENTICATING`,
-  AUTHENTICATED = `AUTHENTICATED`,
-  AUTH_ERROR = `AUTH_ERROR`,
   SET_DATA = `SET_DATA`,
   CLEAR_DATA = `CLEAR_DATA`,
   ADD_MESSAGE = `ADD_MESSAGE`,
