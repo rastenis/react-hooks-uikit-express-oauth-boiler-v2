@@ -5,6 +5,13 @@ import to from "await-to-js";
 const SALT_ROUDS = 10;
 
 export class User extends UserModel {
+  constructor(doc) {
+    super(doc);
+    if (doc) {
+      this.isNew = false;
+    }
+  }
+
   async verifyPassword(candidate) {
     return bcrypt.compare(candidate, this.password);
   }
@@ -26,15 +33,8 @@ export class User extends UserModel {
   }
 
   async saveUser() {
-    if (this.isNew) {
-      let [err, inserted] = await to(User.create(this));
-
-      if (err) {
-        throw err;
-      }
-      return new User(inserted);
-    }
     await this.save();
+    return this;
   }
 
   async deleteUser() {
