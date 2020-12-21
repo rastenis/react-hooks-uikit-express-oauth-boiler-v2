@@ -1,9 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-
 import * as db from "./db";
-import keysConf from "../../config/passportKeys.json";
-import config from "../../config/config.json";
 import { User } from "./controllers/User";
 import to from "await-to-js";
 
@@ -56,7 +53,67 @@ passport.use(
   )
 );
 
+export const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+};
+
+export const isAuthorized = (req, res, next) => {
+  const provider = req.path.split("/").slice(-1)[0];
+  const token = req.user.tokens.find((token) => token.kind === provider);
+  if (token) {
+    return next();
+  }
+
+  res.redirect(`/auth/${provider}`);
+};
+
+export const _promisifiedPassportAuthentication = (req, res): Promise<User> => {
+  return new Promise((resolve, reject) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(user);
+    })(req, res);
+  });
+};
+
+export const _promisifiedPassportLogin = (
+  req: Express.Request,
+  user: User
+): Promise<User> => {
+  return new Promise((resolve, reject) => {
+    req.logIn(user, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(user);
+    });
+  });
+};
+
+export const _promisifiedPassportLogout = (req): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    req.logout();
+    req.session.destroy((err) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve();
+    });
+  });
+};
+
 // These can be used instead of open-authenticator. These were used in the first version of this boilerplate, at https://github.com/Scharkee/react-redux-passport-uikit-express-boiler
+// If you would like to use these, you also need to re-add the routes for auth. This is all handled for you by open-authenticator.
+
+// import { Strategy as TwitterStrategy } from "passport-twitter";
+// import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
+// import keysConf from "../../config/passportKeys.json";
+// import config from "../../config/config.json";
 // // TWITTER
 // passport.use(
 //   new TwitterStrategy(
@@ -289,57 +346,3 @@ passport.use(
 //     }
 //   )
 // );
-
-export const isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
-};
-
-export const isAuthorized = (req, res, next) => {
-  const provider = req.path.split("/").slice(-1)[0];
-  const token = req.user.tokens.find((token) => token.kind === provider);
-  if (token) {
-    return next();
-  }
-
-  res.redirect(`/auth/${provider}`);
-};
-
-export const _promisifiedPassportAuthentication = (req, res): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    passport.authenticate("local", (err, user, info) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(user);
-    })(req, res);
-  });
-};
-
-export const _promisifiedPassportLogin = (
-  req: Express.Request,
-  user: User
-): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    req.logIn(user, (err) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(user);
-    });
-  });
-};
-
-export const _promisifiedPassportLogout = (req): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    req.logout();
-    req.session.destroy((err) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve();
-    });
-  });
-};

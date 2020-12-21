@@ -5,7 +5,7 @@ import to from "await-to-js";
 const SALT_ROUDS = 10;
 
 export class User extends UserModel {
-  constructor(doc) {
+  constructor(doc?) {
     super(doc);
     if (doc) {
       this.isNew = false;
