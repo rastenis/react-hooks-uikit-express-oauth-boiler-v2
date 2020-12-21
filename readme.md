@@ -8,9 +8,10 @@ A React+Redux boilerplate using Express as backend, UIKit for frontend, MongoDB 
 
 ## Features
 
-- Webpack+Babel for the client, babel-node for the server
-- User authentication either via email/password or via Google/Twitter. PassportJS allows for easy expansion to authentication via other social platforms.
-- Auth method merging, linking and unlinking of social auth accounts
+- Webpack+Babel for the client
+- Full TypeScript support for server and client
+- User authentication either via email/password or via [open-authenticator](https://github.com/Scharkee/open-authenticator)(Google, Twitter, LinkedIn, etc.).
+- Auth method merging, linking and unlinking of social accounts. (Only if using open-authenticator).
 - Client
   - React, backed by UIKit components/layout/icons
   - Redux + Redux-saga state management

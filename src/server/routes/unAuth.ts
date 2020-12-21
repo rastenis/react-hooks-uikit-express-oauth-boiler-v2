@@ -57,7 +57,10 @@ router.post("/api/register", check, async (req, res) => {
       .send("Password must be between 5 and a 100 characters.");
   }
 
-  let [err, user] = (await to(new User(req.body).saveUser())) as [any, User];
+  let [err, user] = (await to(new User(req.body, true).saveUser())) as [
+    any,
+    User
+  ];
 
   if (err) {
     if (err.code == 11000) {

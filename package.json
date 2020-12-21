@@ -1,19 +1,19 @@
 {
-  "name": "react-redux-passport-uikit-express-boiler",
-  "version": "1.0.2",
-  "description": "A React+Redux boilerplate using Express as backend, UIKit for frontend, MongoDB for storage & Passport for auth.",
-  "main": "index.js",
+  "name": "react-hooks-uikit-express-oauth-boiler",
+  "version": "2.0.0",
+  "description": "A React+Redux boilerplate using Express as backend, UIKit for frontend, MongoDB for storage & open-authenticator for auth.",
+  "main": "dist/server/index.js",
   "scripts": {
     "deploy": "echo \"Error: no deployment options yet\" && exit 1",
-    "build": "webpack --optimization-minimize --optimization-node-env production && tsc",
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "build": "webpack --optimization-minimize --optimization-node-env production --mode production && tsc",
+    "dev": "concurrently \"yarn run dev:client\" \"yarn run dev:server\"",
     "dev:server": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node src/server/index.ts'",
     "dev:client": "webpack serve --host 0.0.0.0",
     "start": "cross-env NODE_ENV=production node dist/server/src/server/index",
-    "launch": "npm run build; npm run start",
+    "launch": "yarn run build; yarn run start",
     "setup": "node scripts/setup.js",
     "setup:default": "node scripts/setup.default.js",
-    "config": "npm run setup",
+    "config": "yarn run setup",
     "test": "jest --verbose",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -61,8 +61,8 @@
     "@types/bcrypt": "^3.0.0",
     "@types/express-session": "^1.17.3",
     "@types/passport": "^1.0.4",
-    "@types/react-router-dom": "^5.1.6",
     "@types/react": "^17.0.0",
+    "@types/react-router-dom": "^5.1.6",
     "babel-loader": "^8.0.6",
     "concurrently": "^5.3.0",
     "cross-env": "^7.0.3",
@@ -75,7 +75,8 @@
     "svg-inline-loader": "^0.8.0",
     "ts-loader": "^8.0.12",
     "webpack": "^5.10.1",
-    "webpack-cli": "^4.2.0"
+    "webpack-cli": "^4.2.0",
+    "webpack-dev-server": "^3.11.0"
   },
   "jest": {
     "moduleNameMapper": {

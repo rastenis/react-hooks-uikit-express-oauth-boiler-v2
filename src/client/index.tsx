@@ -7,7 +7,7 @@ import "uikit/dist/css/uikit.min.css";
 
 import UIkit from "uikit";
 import icons from "uikit/dist/js/uikit-icons";
-window.UIkit = UIkit;
+(window as any).UIkit = UIkit;
 // loads the icon plugin
 UIkit.use(icons);
 

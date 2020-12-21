@@ -46,7 +46,6 @@ export const mainReducerMiddleware = (dispatch, history) =>
 
         const data = res?.data;
 
-        console.log(data);
         const newState: MainState = {
           data: {},
           userData: data?.userData,
@@ -129,10 +128,10 @@ export const mainReducerMiddleware = (dispatch, history) =>
         // show message
         handleRequestSuccess(dispatch, res);
 
-        dispatch({
-          type: Actions.SET_AUTH,
-          payload: AuthState.AUTHENTICATED,
-        });
+        // dispatch({
+        //   type: Actions.SET_AUTH,
+        //   payload: AuthState.AUTHENTICATED,
+        // });
 
         history.push("/");
         break;
