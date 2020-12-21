@@ -1,7 +1,7 @@
 "use strict";
 
 import app from "./server";
-import config from "../../config/config.json";
+import { config } from "./config";
 
 // http app listening
 let port = config.port || process.env.PORT || 7777;

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import config from "../../config/config.json";
+import { config } from "./config";
 import { User as UserController } from "./controllers/User";
 
 const userSchema = new mongoose.Schema({

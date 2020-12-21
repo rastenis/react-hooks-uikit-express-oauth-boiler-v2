@@ -4,7 +4,7 @@
   "saltAmount": 11,
   "secret": "very-secret-phrase",
   "url": "http://example.com",
-  "selfHosted": false,
+  "secure": false,
   "tls": {
     "tos": false,
     "email": "example@email.com",

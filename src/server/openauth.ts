@@ -8,7 +8,7 @@ import {
   _promisifiedPassportLogout,
 } from "./passport";
 
-import config from "../../config/config.json";
+import { config } from "./config";
 import axios from "axios";
 import { User } from "./controllers/User";
 import to from "await-to-js";

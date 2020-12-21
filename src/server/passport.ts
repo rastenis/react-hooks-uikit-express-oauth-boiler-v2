@@ -113,7 +113,7 @@ export const _promisifiedPassportLogout = (req): Promise<void> => {
 // import { Strategy as TwitterStrategy } from "passport-twitter";
 // import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
 // import keysConf from "../../config/passportKeys.json";
-// import config from "../../config/config.json";
+// import { config } from "./config";;
 // // TWITTER
 // passport.use(
 //   new TwitterStrategy(

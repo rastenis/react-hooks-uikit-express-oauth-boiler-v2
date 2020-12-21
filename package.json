@@ -9,7 +9,7 @@
     "dev": "concurrently \"yarn run dev:client\" \"yarn run dev:server\"",
     "dev:server": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node src/server/index.ts'",
     "dev:client": "webpack serve --host 0.0.0.0",
-    "start": "cross-env NODE_ENV=production node dist/server/src/server/index",
+    "start": "cross-env NODE_ENV=production node dist/server/index",
     "launch": "yarn run build; yarn run start",
     "setup": "node scripts/setup.js",
     "setup:default": "node scripts/setup.default.js",

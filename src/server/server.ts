@@ -14,10 +14,10 @@ import mongoose from "mongoose";
 import faker from "faker";
 import mongoStore from "connect-mongo";
 
-import config from "../../config/config.json";
 import onlyUnAuth from "./routes/unAuth";
 import onlyAuth from "./routes/auth";
 import { User, User as ControllerUser } from "./controllers/User";
+import { config } from "./config";
 
 const MongoStore = mongoStore(session);
 const app = express();
@@ -42,7 +42,7 @@ declare global {
 }
 
 // proxy providing tls (override)
-if (config.url.includes("https") && !config.selfHosted) {
+if (config.url.includes("https") && !config.secure) {
   app.set("trust proxy", 1);
 }
 
@@ -58,17 +58,17 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure:
-        process.env.NODE_ENV == `production` &&
-        (config.selfHosted || config.url.includes("https"))
+        process.env.NODE_ENV === `production` &&
+        (config.secure || config.url.includes("https"))
           ? true
           : false,
       // 4 hours cookie expiration when secure, infinite when unsecure.
       maxAge:
-        config.selfHosted || config.url.includes("https")
+        config.secure || config.url.includes("https")
           ? Date.now() + 60 * 60 * 1000 * 4
           : undefined,
       domain:
-        process.env.NODE_ENV == `production`
+        process.env.NODE_ENV === `production`
           ? config.url.replace(/http:\/\/|https:\/\//g, "")
           : "",
     },
@@ -154,8 +154,7 @@ app.get("/api/data", (req, res) => {
 
 // serving built bundle if in production
 if (process.env.NODE_ENV == `production`) {
-  console.log(path.resolve(__dirname, "../../../client"));
-  app.use(express.static(path.resolve(__dirname, "../../../client")));
+  app.use(express.static(path.resolve(__dirname, "../client")));
   app.get("/*", (req, res) => {
     res.sendFile(path.resolve("index.html"));
   });
