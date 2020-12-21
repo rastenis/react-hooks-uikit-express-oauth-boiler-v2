@@ -1,7 +1,7 @@
 {
-  "name": "react-hooks-uikit-express-oauth-boiler",
+  "name": "react-hooks-uikit-express-oauth-boiler-v2",
   "version": "2.0.0",
-  "description": "A React+Redux boilerplate using Express as backend, UIKit for frontend, MongoDB for storage & open-authenticator for auth.",
+  "description": "A React TypeScript boilerplate utilizing React hooks, using Express as backend, UIKit for frontend, MongoDB for storage & open-authenticator for oauth.",
   "main": "dist/server/index.js",
   "scripts": {
     "deploy": "echo \"Error: no deployment options yet\" && exit 1",
@@ -21,7 +21,7 @@
   "author": "Scharkee",
   "repository": {
     "type": "git",
-    "url": "https://repo.hepha.co.uk/root/react-redux-passport-uikit-express-boiler"
+    "url": "https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2"
   },
   "license": "ISC",
   "dependencies": {

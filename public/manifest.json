@@ -1,6 +1,6 @@
 {
   "short_name": "boiler",
-  "name": "react-redux-passport-uikit-express-boiler-v2",
+  "name": "react-hooks-uikit-express-oauth-boiler-v2",
   "icons": [
     {
       "src": "favicon.ico",

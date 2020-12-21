@@ -9,7 +9,7 @@ let passportKeys = require("../config/passportKeysExample.json");
 
 console.log(
   chalk.bgBlue.white.bold(
-    "react-redux-passport-uikit-express-boiler" + new Array(9).join(" ")
+    "react-hooks-uikit-express-oauth-boiler-v2" + new Array(9).join(" ")
   )
 );
 console.log(chalk.bgBlue.black(new Array(50).join(" ")));
@@ -99,7 +99,7 @@ console.log(chalk.bgBlue.black(new Array(50).join(" ")));
 console.log(chalk.bgBlue.white.bold("Exiting..." + new Array(40).join(" ")));
 
 config.secret = [...Array(30)]
-  .map(i => (~~(Math.random() * 36)).toString(36))
+  .map((i) => (~~(Math.random() * 36)).toString(36))
   .join("");
 
 // key setup will be either done, or ignored, either way, saving set values/defaults

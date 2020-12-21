@@ -1,6 +1,6 @@
-# react-redux-passport-uikit-express-boiler
+# react-hooks-uikit-express-oauth-boiler-v2
 
-[![Status](https://travis-ci.org/scharkee/react-redux-passport-uikit-express-boiler.svg?branch=master)](https://travis-ci.org/scharkee/react-redux-passport-uikit-express-boiler)
+[![Status](https://travis-ci.org/scharkee/react-hooks-uikit-express-oauth-boiler-v2.svg?branch=master)](https://travis-ci.org/scharkee/react-hooks-uikit-express-oauth-boiler-v2)
 
 A React TypeScript boilerplate utilizing React hooks, using Express as backend, UIKit for frontend, MongoDB for storage & [open-authenticator](https://github.com/Scharkee/open-authenticator) for oauth.
 
@@ -33,8 +33,8 @@ A React TypeScript boilerplate utilizing React hooks, using Express as backend, 
 ```bash
 
 # clone the repo
-$ git clone https://github.com/Scharkee/react-redux-passport-uikit-express-boiler.git
-$ cd react-redux-passport-uikit-express-boiler
+$ git clone https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.git
+$ cd react-hooks-uikit-express-oauth-boiler-v2
 # install dependencies
 $ npm i
 # perform guided setup
