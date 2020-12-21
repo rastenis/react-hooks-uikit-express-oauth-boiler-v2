@@ -1,16 +1,14 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as TwitterStrategy } from "passport-twitter";
-import { OAuth2Strategy as GoogleStrategy } from "passport-google-oauth";
 
-import db from "./db";
+import * as db from "./db";
 import keysConf from "../../config/passportKeys.json";
 import config from "../../config/config.json";
 import { User } from "./controllers/User";
 import to from "await-to-js";
 
 // serialize user in order to store in session in a lightweight manner
-passport.serializeUser((user: User, done) => done(null, user.data._id));
+passport.serializeUser((user: User, done) => done(null, user._id));
 
 // deserialize user back from session storage
 passport.deserializeUser(async (id, done) => {
@@ -58,248 +56,239 @@ passport.use(
   )
 );
 
-// TWITTER
-passport.use(
-  new TwitterStrategy(
-    {
-      consumerKey: keysConf.TWITTER_KEY,
-      consumerSecret: keysConf.TWITTER_SECRET,
-      callbackURL: `${config.url || ""}/auth/twitter/callback`,
-      passReqToCallback: true,
-    },
-    async (req, accessToken, tokenSecret, profile, done) => {
-      // checking for linked accounts
-      let [error, existingUser] = await to(
-        db.User.findOne({
-          twitter: profile.id,
-        }).exec()
-      );
+// These can be used instead of open-authenticator. These were used in the first version of this boilerplate, at https://github.com/Scharkee/react-redux-passport-uikit-express-boiler
+// // TWITTER
+// passport.use(
+//   new TwitterStrategy(
+//     {
+//       consumerKey: keysConf.TWITTER_KEY,
+//       consumerSecret: keysConf.TWITTER_SECRET,
+//       callbackURL: `${config.url || ""}/auth/twitter/callback`,
+//       passReqToCallback: true,
+//     },
+//     async (req, accessToken, tokenSecret, profile, done) => {
+//       // checking for linked accounts
+//       let [error, existingUser] = await to(
+//         db.User.findOne({
+//           twitter: profile.id,
+//         }).exec()
+//       );
 
-      if (error) {
-        return done(error);
-      }
+//       if (error) {
+//         return done(error);
+//       }
 
-      if (existingUser) {
-        if (req.user) {
-          req.session.message = {
-            msg: "This Twitter account is already linked.",
-            error: true,
-          };
+//       if (existingUser) {
+//         if (req.user) {
+//           req.session.message = {
+//             msg: "This Twitter account is already linked.",
+//             error: true,
+//           };
 
-          return done(null, false);
-        }
-        return done(null, new User(existingUser));
-      }
+//           return done(null, false);
+//         }
+//         return done(null, new User(existingUser));
+//       }
 
-      if (req.user) {
-        // linking Twitter with existing logged in account
-        let user = new User(req.user.data);
-        user.data.twitter = profile.id;
-        user.data.tokens.push({
-          kind: "twitter",
-          accessToken,
-          tokenSecret,
-        });
+//       if (req.user) {
+//         // linking Twitter with existing logged in account
+//         let user = new User(req.user);
+//         user.tokens.twitter = {
+//           identity: profile.id,
+//           accessToken,
+//           tokenSecret,
+//         };
 
-        // profile info, without overwriting anything
-        user.data.profile = user.data.profile || {};
-        user.data.profile.name = user.data.profile.name || profile.displayName;
-        user.data.profile.location =
-          user.data.profile.location || profile._json.location;
-        user.data.profile.picture =
-          user.data.profile.picture || profile._json.profile_image_url_https;
+//         // profile info, without overwriting anything
+//         user.profile = user.profile || {};
+//         user.profile.name = user.profile.name || profile.displayName;
+//         user.profile.location = user.profile.location || profile._json.location;
+//         user.profile.picture =
+//           user.profile.picture || profile._json.profile_image_url_https;
 
-        // save user
-        let [linkError, linkedUser] = await to(user.saveUser());
+//         // save user
+//         let [linkError, linkedUser] = await to(user.saveUser());
 
-        if (linkError) {
-          return done(linkError);
-        }
+//         if (linkError) {
+//           return done(linkError);
+//         }
 
-        let [err] = await to(_promisifiedPassportLogin(req, linkedUser!));
+//         let [err] = await to(_promisifiedPassportLogin(req, linkedUser!));
 
-        if (err) {
-          req.session.message = {
-            msg: "Internal server error.",
-            error: true,
-          };
+//         if (err) {
+//           req.session.message = {
+//             msg: "Internal server error.",
+//             error: true,
+//           };
 
-          return done(null, false);
-        }
+//           return done(null, false);
+//         }
 
-        // Twitter linked successfully
-        req.session.message = {
-          msg: "Twitter successfully linked!",
-          error: false,
-        };
-        return done(null, user);
-      }
+//         // Twitter linked successfully
+//         req.session.message = {
+//           msg: "Twitter successfully linked!",
+//           error: false,
+//         };
+//         return done(null, user);
+//       }
 
-      // create new user
-      let user = new User();
-      // Twitter will not provide an email address, so we save the Twitter handle, which is unique,
-      // and produce a fake 'email':
-      user.data.email = `${profile.username}@twitter.com`;
-      user._meta.noPassword = true;
-      user.data.twitter = profile.id;
-      user.data.tokens.push({
-        kind: "twitter",
-        accessToken,
-        tokenSecret,
-      });
+//       // create new user
+//       let user = new User();
+//       // Twitter will not provide an email address, so we save the Twitter handle, which is unique,
+//       // and produce a fake 'email':
+//       user.email = `${profile.username}@twitter.com`;
+//       user.tokens.twitter = {
+//         identity: profile.id,
+//         accessToken,
+//         tokenSecret,
+//       };
 
-      // profile
-      user.data.profile = user.data.profile || {};
-      user.data.profile.name = profile.displayName;
-      user.data.profile.location = profile._json.location;
-      user.data.profile.picture = profile._json.profile_image_url_https;
+//       // profile
+//       user.profile = user.profile || {};
+//       user.profile.name = profile.displayName;
+//       user.profile.location = profile._json.location;
+//       user.profile.picture = profile._json.profile_image_url_https;
 
-      let [creationError, createdUser] = await to(user.saveUser());
+//       let [creationError, createdUser] = await to(user.saveUser());
 
-      if (creationError) {
-        req.session.message = {
-          msg: "Internal server error.",
-          error: true,
-        };
+//       if (creationError) {
+//         req.session.message = {
+//           msg: "Internal server error.",
+//           error: true,
+//         };
 
-        return done(null, false);
-      }
+//         return done(null, false);
+//       }
 
-      // created a new account via Twitter
-      req.session.message = {
-        msg: "Created a new account via Twitter!",
-        error: false,
-      };
-      return done(null, createdUser);
-    }
-  )
-);
+//       // created a new account via Twitter
+//       req.session.message = {
+//         msg: "Created a new account via Twitter!",
+//         error: false,
+//       };
+//       return done(null, createdUser);
+//     }
+//   )
+// );
 
-// GOOGLE
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: keysConf.GOOGLE_ID,
-      clientSecret: keysConf.GOOGLE_SECRET,
-      callbackURL: `${config.url || ""}/auth/google/callback`,
-      passReqToCallback: true,
-    },
-    async (req, accessToken, refreshToken, profile, done) => {
-      // checking for linked accounts
-      let [error, existingUser] = await to(
-        db.User.findOne({
-          google: profile.id,
-        }).exec()
-      );
+// // GOOGLE
+// passport.use(
+//   new GoogleStrategy(
+//     {
+//       clientID: keysConf.GOOGLE_ID,
+//       clientSecret: keysConf.GOOGLE_SECRET,
+//       callbackURL: `${config.url || ""}/auth/google/callback`,
+//       passReqToCallback: true,
+//     },
+//     async (req, accessToken, refreshToken, profile, done) => {
+//       // checking for linked accounts
+//       let [error, existingUser] = await to(
+//         db.User.findOne({
+//           google: profile.id,
+//         }).exec()
+//       );
 
-      if (error) {
-        return done(error);
-      }
+//       if (error) {
+//         return done(error);
+//       }
 
-      if (existingUser) {
-        if (req.user) {
-          req.session.message = {
-            msg: "This Google account is already linked.",
-            error: true,
-          };
+//       if (existingUser) {
+//         if (req.user) {
+//           req.session.message = {
+//             msg: "This Google account is already linked.",
+//             error: true,
+//           };
 
-          return done(null, false);
-        }
+//           return done(null, false);
+//         }
 
-        return done(null, new User(existingUser));
-      }
+//         return done(null, new User(existingUser));
+//       }
 
-      if (req.user) {
-        // linking Google with existing logged in account
-        let user = new User(req.user.data);
-        user.data.google = profile.id;
-        user.data.tokens.push({
-          kind: "google",
-          accessToken,
-        });
+//       if (req.user) {
+//         // linking Google with existing logged in account
+//         let user = new User(req.user);
+//         user.tokens.google = {
+//           identity: profile.id,
+//           accessToken,
+//         };
 
-        // not overwriting existing profile values
-        user.data.profile = user.data.profile || {};
-        user.data.profile.name = user.data.profile.name || profile.displayName;
-        user.data.profile.gender =
-          user.data.profile.gender || profile._json.gender;
-        user.data.profile.picture =
-          user.data.profile.picture || profile._json.picture;
+//         // not overwriting existing profile values
+//         user.profile = user.profile || {};
+//         user.profile.name = user.profile.name || profile.displayName;
+//         user.profile.gender = user.profile.gender || profile._json.gender;
+//         user.profile.picture = user.profile.picture || profile._json.picture;
 
-        // save user
-        let [linkError, linkedUser] = await to(user.saveUser());
+//         // save user
+//         let [linkError, linkedUser] = await to(user.saveUser());
 
-        if (linkError) {
-          return done(linkError);
-        }
+//         if (linkError) {
+//           return done(linkError);
+//         }
 
-        let [err] = await to(_promisifiedPassportLogin(req, linkedUser!));
+//         let [err] = await to(_promisifiedPassportLogin(req, linkedUser!));
 
-        if (err) {
-          req.session.message = {
-            msg: "Internal server error.",
-            error: true,
-          };
+//         if (err) {
+//           req.session.message = {
+//             msg: "Internal server error.",
+//             error: true,
+//           };
 
-          return done(null, false);
-        }
+//           return done(null, false);
+//         }
 
-        // Google linked successfully
-        req.session.message = {
-          msg: "Google successfully linked!",
-          error: false,
-        };
-        return done(null, user);
-      }
+//         // Google linked successfully
+//         req.session.message = {
+//           msg: "Google successfully linked!",
+//           error: false,
+//         };
+//         return done(null, user);
+//       }
 
-      // create new user
-      let user = new User();
-      user._meta.noPassword = true;
-      user.data.email = profile.emails[0].value;
-      user.data.google = profile.id;
-      user.data.tokens.push({
-        kind: "google",
-        accessToken,
-      });
+//       // create new user
+//       let user = new User();
+//       user.email = profile.emails[0].value;
+//       user.tokens.google = {
+//         identity: profile.id,
+//         accessToken,
+//       };
+//       // initiating profile if not existent
+//       user.profile = user.profile || {};
+//       user.profile.name = profile.displayName;
+//       user.profile.gender = profile._json.gender;
+//       user.profile.picture = profile._json.picture;
 
-      // initiating profile if not existent
-      user.data.profile = user.data.profile || {};
-      user.data.profile.name = profile.displayName;
-      user.data.profile.gender = profile._json.gender;
-      user.data.profile.picture = profile._json.picture;
+//       let [creationError, createdUser] = (await to(user.saveUser())) as [
+//         any,
+//         User
+//       ];
 
-      let [creationError, createdUser] = (await to(user.saveUser())) as [
-        any,
-        User
-      ];
+//       if (creationError) {
+//         if (creationError.code == 11000) {
+//           req.session.message = {
+//             msg: "This email account is already in use!",
+//             error: true,
+//           };
 
-      if (creationError) {
-        if (creationError.code == 11000) {
-          req.session.message = {
-            msg: "This email account is already in use!",
-            error: true,
-          };
+//           return done(null, false);
+//         } else {
+//           req.session.message = {
+//             msg: "Internal server error.",
+//             error: true,
+//           };
 
-          return done(null, false);
-        } else {
-          req.session.message = {
-            msg: "Internal server error.",
-            error: true,
-          };
+//           return done(null, false);
+//         }
+//       }
 
-          return done(null, false);
-        }
-      }
-
-      // created a new account via Google
-      req.session.message = {
-        msg: "Created a new account via Google!",
-        error: false,
-      };
-      return done(null, createdUser);
-    }
-  )
-);
+//       // created a new account via Google
+//       req.session.message = {
+//         msg: "Created a new account via Google!",
+//         error: false,
+//       };
+//       return done(null, createdUser);
+//     }
+//   )
+// );
 
 export const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
@@ -310,7 +299,7 @@ export const isAuthenticated = (req, res, next) => {
 
 export const isAuthorized = (req, res, next) => {
   const provider = req.path.split("/").slice(-1)[0];
-  const token = req.user.data.tokens.find((token) => token.kind === provider);
+  const token = req.user.tokens.find((token) => token.kind === provider);
   if (token) {
     return next();
   }

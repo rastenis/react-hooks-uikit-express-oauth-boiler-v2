@@ -40,7 +40,7 @@ router.post("/api/login", check, async (req, res) => {
 
   return res.send({
     msg: "You have successfully logged in!",
-    state: { profile: { ...user.data.profile, id: user.data._id } },
+    state: { profile: { ...user.profile, id: user._id } },
   });
 });
 
@@ -76,7 +76,7 @@ router.post("/api/register", check, async (req, res) => {
   }
   return res.send({
     msg: "You have successfully registered!",
-    state: { profile: { ...user.data.profile, id: user.data._id } },
+    state: { profile: { ...user.profile, id: user._id } },
   });
 });
 

@@ -28,10 +28,10 @@ declare module "express-session" {
   interface Session {
     user?: User;
     returnTo?: string;
-    message?: {
+    messages?: {
       msg: string;
       error: boolean;
-    };
+    }[];
   }
 }
 
@@ -88,32 +88,30 @@ app.use("/", onlyUnAuth);
 // only authhenticated users allowed
 app.use("/", onlyAuth);
 
-// passportjs auth + callback routes
-app.get(
-  "/auth/google",
-  passport.authenticate("google", {
-    scope: "profile email",
-  })
-);
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/login",
-  }),
-  (req, res) => {
-    res.redirect(req.session.returnTo || "/");
-  }
-);
-app.get("/auth/twitter", passport.authenticate("twitter"));
-app.get(
-  "/auth/twitter/callback",
-  passport.authenticate("twitter", {
-    failureRedirect: "/login",
-  }),
-  (req, res) => {
-    res.redirect(req.session.returnTo || "/");
-  }
-);
+// router.get("/strategy/:strategy", checkSetup, (req, res) => {
+//   return res.redirect(
+//     `${process.env.PROTOCOL}://${
+//       process.env.AUTHENTICATORDOMAIN
+//     }/initiate?client_id=${
+//       config.authenticator?.client ?? "controls"
+//     }&strategy=${req.params.strategy}&redirect_uri=${process.env.PROTOCOL}://${
+//       process.env.DOMAIN
+//     }/api/oauth/callback`
+//   );
+// });
+
+// router.get("/strategies", async (req, res) => {
+//   if (!process.env.AUTHENTICATORDOMAIN) {
+//     return res.json([]);
+//   }
+
+//   const strats = await axios.get(
+//     `${process.env.PROTOCOL}://${process.env.AUTHENTICATORDOMAIN}/strategies`,
+//     { timeout: 5000 }
+//   );
+
+//   return res.json(strats.data);
+// });
 
 // data fetch route (initially just a session ping to avoid localStorage, now user mock data preload has been added)
 app.get("/api/data", (req, res) => {
@@ -121,12 +119,12 @@ app.get("/api/data", (req, res) => {
 
   const messages = [] as { error: boolean; msg: string }[];
 
-  if (req.session.message) {
-    const m = Object.assign({}, req.session.message);
-    messages.push(m);
+  if (req.session.messages) {
+    const m = Object.assign([], req.session.messages);
+    messages.push(...m);
   }
 
-  delete req.session.message;
+  req.session.messages = [];
 
   if (!req.user) {
     return res.send({
@@ -139,8 +137,8 @@ app.get("/api/data", (req, res) => {
   return res.send({
     auth: true,
     userData: {
-      ...req.user.data,
-      password: req.user.data.password ? "<password>" : null, // this is to avoid leaking the password hash.
+      ...req.user.toObject(),
+      password: req.user.password ? "<password>" : null, // this is to avoid leaking the password hash.
     },
     // mock some data
     people: Array.apply(null, Array(4)).map(() => {

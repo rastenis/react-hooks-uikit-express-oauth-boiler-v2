@@ -9,5 +9,10 @@
     "tos": false,
     "email": "example@email.com",
     "domains": []
+  },
+  "openAuthenticator": {
+    "enabled": true,
+    "client": "boiler",
+    "key": "pass"
   }
 }

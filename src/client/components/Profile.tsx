@@ -167,69 +167,59 @@ export const Profile = () => {
         className="uk-form-stacked uk-container uk-container-center"
       >
         <h3>Linked Accounts</h3>
-        {Object.keys(store.state.data || {}).length > 0 ? (
-          store.state.userData.google ? (
-            <button
-              type="button"
-              className="uk-button uk-button-danger  uk-width-expand uk-margin-small-bottom"
-              onClick={submitUnlinkAuth}
-              data-target="google"
-              disabled={
-                !(
-                  store.state.userData.tokens.length > 1 ||
-                  store.state.userData.password
-                )
-              }
-            >
-              <span uk-icon="icon: google" className=" uk-margin-small-right" />
-              Unlink Google
-            </button>
-          ) : (
-            <a
-              type="button"
-              className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-              href="/auth/google"
-            >
-              <span uk-icon="icon: google" className=" uk-margin-small-right" />
-              Link Google
-            </a>
-          )
-        ) : null}
+        {store.state?.userData?.tokens?.google ? (
+          <button
+            type="button"
+            className="uk-button uk-button-danger  uk-width-expand uk-margin-small-bottom"
+            onClick={submitUnlinkAuth}
+            data-target="google"
+            disabled={
+              !(
+                store.state.userData.tokens.length > 1 ||
+                store.state.userData.password
+              )
+            }
+          >
+            <span uk-icon="icon: google" className=" uk-margin-small-right" />
+            Unlink Google
+          </button>
+        ) : (
+          <a
+            type="button"
+            className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
+            href="/auth/google"
+          >
+            <span uk-icon="icon: google" className=" uk-margin-small-right" />
+            Link Google
+          </a>
+        )}
 
-        {Object.keys(store.state.data || {}).length > 0 ? (
-          store.state.userData.twitter ? (
-            <button
-              type="button"
-              className="uk-button uk-button-danger uk-width-expand uk-margin-small-bottom"
-              onClick={submitUnlinkAuth}
-              data-target="twitter"
-              disabled={
-                !(
-                  store.state.userData.tokens.length > 1 ||
-                  store.state.userData.password
-                )
-              }
-            >
-              <span
-                uk-icon="icon: twitter"
-                className=" uk-margin-small-right"
-              />
-              Unlink Twitter
-            </button>
-          ) : (
-            <a
-              type="button"
-              className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-              href="/auth/twitter"
-            >
-              <span
-                uk-icon="icon: twitter"
-                className=" uk-margin-small-right"
-              />
-              Link Twitter
-            </a>
-          )
-        ) : null}
+        {store.state?.userData?.tokens?.twitter ? (
+          <button
+            type="button"
+            className="uk-button uk-button-danger uk-width-expand uk-margin-small-bottom"
+            onClick={submitUnlinkAuth}
+            data-target="twitter"
+            disabled={
+              !(
+                store.state.userData.tokens.length > 1 ||
+                store.state.userData.password
+              )
+            }
+          >
+            <span uk-icon="icon: twitter" className=" uk-margin-small-right" />
+            Unlink Twitter
+          </button>
+        ) : (
+          <a
+            type="button"
+            className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
+            href="/auth/twitter"
+          >
+            <span uk-icon="icon: twitter" className=" uk-margin-small-right" />
+            Link Twitter
+          </a>
+        )}
       </div>
     </div>
   );
