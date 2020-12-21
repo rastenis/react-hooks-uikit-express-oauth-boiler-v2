@@ -1,42 +1,45 @@
-# react-redux-passport-uikit-express-boiler
+# react-hooks-uikit-express-oauth-boiler-v2
 
-[![Status](https://travis-ci.org/scharkee/react-redux-passport-uikit-express-boiler.svg?branch=master)](https://travis-ci.org/scharkee/react-redux-passport-uikit-express-boiler)
+[![Status](https://travis-ci.org/scharkee/react-hooks-uikit-express-oauth-boiler-v2.svg?branch=master)](https://travis-ci.org/scharkee/react-hooks-uikit-express-oauth-boiler-v2)
 
-A React+Redux boilerplate using Express as backend, UIKit for frontend, MongoDB for storage & Passport for auth.
+A React TypeScript boilerplate utilizing React hooks, using Express as backend, UIKit for frontend, MongoDB for storage & [open-authenticator](https://github.com/Scharkee/open-authenticator) for oauth.
 
-[Demo website.](https://reactredux.demos.matasr.com)
+[Demo website.](https://reacthooks.demos.matasr.com)
 
 ## Features
 
-- Webpack+Babel for the client, babel-node for the server
-- User authentication either via email/password or via Google/Twitter. PassportJS allows for easy expansion to authentication via other social platforms.
-- Auth method merging, linking and unlinking of social auth accounts
+- Webpack+Babel for the client
+- Full TypeScript support for server and client
+- User authentication:
+  - email/password (basic/lightweight mode)
+  - via [open-authenticator](https://github.com/Scharkee/open-authenticator)(Google, Twitter, LinkedIn, etc.).
+- Auth method merging, linking and unlinking of social accounts. (Only if using open-authenticator).
 - Client
   - React, backed by UIKit components/layout/icons
-  - Redux + Redux-saga state management
+  - React hooks for state management
   - Mocked auth-gated data example
-  - redux-devtools and redux-logger automatically enabled in devmode for testing purposes
+  - Dynamic UI elements that generate from with open-authenticator, based on your config
 - Server
   - Express server
   - Async/await design with await-to-js error handling
-  - MongoDB(mongoose) for storage
+  - MongoDB for storage, via mongoose.
   - Auth-based route guarding
 - TLS/HTTPS:
-  - Automatic certificate generation powered by greenlock
-  - Self hosted mode (443/80 port access required) + simple mode (http only, custom port), for use with reverse proxy configurations
+  - Automatic certificate generation if running composition
+  - Simple/dev mode (http only, custom port), for use with reverse proxy configurations or for basic http operation.
 
 ## Installation
 
 ```bash
 
 # clone the repo
-$ git clone https://github.com/Scharkee/react-redux-passport-uikit-express-boiler.git
-$ cd react-redux-passport-uikit-express-boiler
+$ git clone https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.git
+$ cd react-hooks-uikit-express-oauth-boiler-v2
 # install dependencies
 $ npm i
 # perform guided setup
 $ npm run setup
-# build the client and launch everything in devmode on port 8081.
+# build the client and launch everything in devmode on port 8080.
 $ npm run dev
 
 # launch in production mode on the port that was chosen when setting up (default 7777)
@@ -44,9 +47,9 @@ $ npm run launch
 
 ```
 
-## TODO
+## TODO:
 
-- Full coverage tests.
+- open-authenticator integration.
 
 ### Unguided key setup
 

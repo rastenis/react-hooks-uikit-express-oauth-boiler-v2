@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { User } from "../controllers/user";
+import { User } from "../controllers/User";
 import {
   _promisifiedPassportAuthentication,
   _promisifiedPassportLogin,
@@ -19,13 +19,9 @@ const check = (req, res, next) => {
 
 // route to unlink auth accounts
 router.post("/api/unlink", check, async (req, res) => {
-  let user = new User(req.session.user?.data);
+  let user = new User(req.user);
 
-  user.data.tokens = user.data.tokens.filter((t) => {
-    return t.kind != req.body.toUnlink;
-  });
-
-  user.data[req.body.toUnlink] = null;
+  user.tokens[req.body.toUnlink] = undefined;
 
   let [err, savedUser] = await to(user.saveUser());
 
@@ -33,16 +29,16 @@ router.post("/api/unlink", check, async (req, res) => {
     return res.status(500).send("Internal server error.");
   }
 
-  req.session.user = savedUser;
+  req.user = savedUser;
 
   return res.send({
-    state: { userData: req.session.user.data },
+    state: { userData: req.user.toObject() },
     msg: "Successfully unlinked!",
   });
 });
 
 router.post("/api/changePassword", check, async (req, res) => {
-  let user = new User(req.session.user?.data);
+  let user = new User(req.user);
 
   let [e, matched] = await to(user.verifyPassword(req.body.oldPassword));
 
@@ -50,7 +46,7 @@ router.post("/api/changePassword", check, async (req, res) => {
     return res.status(500).send("Wrong old password!");
   }
 
-  user.data.password = req.body.newPassword;
+  user.password = req.body.newPassword;
 
   let [err, savedUser] = await to(user.saveUser());
 

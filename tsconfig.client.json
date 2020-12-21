@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "baseUrl": "src/client"
+  },
+  "exclude": ["node_modules", "dist"]
+}

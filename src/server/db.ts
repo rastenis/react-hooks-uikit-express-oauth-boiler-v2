@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import config from "../../config/config.json";
+import { config } from "./config";
+import { User as UserController } from "./controllers/User";
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -7,22 +8,31 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   password: String,
-  tokens: [],
+  tokens: {},
   profile: {},
-  google: String,
-  twitter: String,
 });
 
-const User = mongoose.model("User", userSchema, "users");
+userSchema.pre("save", async function (next) {
+  let thisDoc = <IUser>this;
+  thisDoc.password = await UserController.ensurePasswordHashed(thisDoc);
+  next();
+});
+
+export interface IUser extends mongoose.Document {
+  email: string;
+  password: string;
+  tokens: {
+    [platform: string]:
+      | { identity: string; [additionalKey: string]: any }
+      | undefined;
+  };
+  profile: any;
+}
+
+export const User = mongoose.model<IUser>("User", userSchema, "users");
 
 mongoose.connect(config.mongooseConnectionString, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
 });
-
-const db = {
-  User: User,
-};
-
-export default db;
