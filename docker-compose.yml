@@ -1,0 +1,27 @@
+version: "3.4"
+services:
+  boiler:
+    restart: always
+    build:
+      context: ./
+    container_name: boiler
+    depends_on:
+      - mongo
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/uploads:/app/packages/core/uploads
+    environment:
+      REBUILD: "${REBUILD}"
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    volumes:
+      - ./data/db:/data/db
+  authenticator:
+    restart: always
+    container_name: authenticator
+    image: scharkee/open-authenticator
+    volumes:
+      - ./config/open-authenticator:/app/config

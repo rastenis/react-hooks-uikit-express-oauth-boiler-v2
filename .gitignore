@@ -4,3 +4,4 @@ config.json
 passportKeys.json
 dist
 coverage
+data
