@@ -14,8 +14,10 @@ import mongoose from "mongoose";
 import faker from "faker";
 import mongoStore from "connect-mongo";
 
-import onlyUnAuth from "./routes/unAuth";
-import onlyAuth from "./routes/auth";
+import onlyUnauthenticatedRoutes from "./routes/unAuth";
+import onlyAuthenticatedRoutes from "./routes/auth";
+import oauthRoutes from "./routes/oauth";
+
 import { User, User as ControllerUser } from "./controllers/User";
 import { config } from "./config";
 
@@ -82,11 +84,14 @@ app.use(
 
 app.use(passport.initialize(), passport.session());
 
+// open-authenticator hook
+app.use("/oauth", oauthRoutes);
+
 // only unauthenticated users allowed
-app.use("/", onlyUnAuth);
+app.use("/", onlyUnauthenticatedRoutes);
 
 // only authhenticated users allowed
-app.use("/", onlyAuth);
+app.use("/", onlyAuthenticatedRoutes);
 
 // data fetch route (initially just a session ping to avoid localStorage, now user mock data preload has been added)
 app.get("/api/data", (req, res) => {
@@ -124,7 +129,7 @@ app.get("/api/data", (req, res) => {
       };
     }),
     messages,
-    openAuthenticatorURL: config.openAuthenticator?.url, // send the url if enabled.
+    openAuthenticatorEnabled: config.openAuthenticator?.enabled,
   });
 });
 

@@ -62,11 +62,10 @@ export const mainReducerMiddleware = (dispatch, history) =>
           newState.messages.push(...data.messages);
         }
 
-        if (data.openAuthenticatorURL) {
+        if (data.openAuthenticatorEnabled) {
           // Contacting open-authenticator to fetch strategies.
           await middleware({
             type: Actions.DO_OPENAUTHENTICATOR_FETCH,
-            payload: data.openAuthenticatorURL,
           });
         }
 
@@ -76,7 +75,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
 
       case Actions.DO_OPENAUTHENTICATOR_FETCH: {
         const [error, res] = await to(
-          axios.get(`${action.payload}/strategies`, { timeout: 5000 })
+          axios.get(`/oauth/strategies`, { timeout: 5000 })
         );
         // We do not need to show the clients errors for this; the login methods simply will not show up.
 

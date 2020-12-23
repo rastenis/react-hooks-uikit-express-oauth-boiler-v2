@@ -6,15 +6,17 @@ import {
   _promisifiedPassportAuthentication,
   _promisifiedPassportLogin,
   _promisifiedPassportLogout,
-} from "./passport";
+} from "../passport";
 
-import { config } from "./config";
+import { config } from "../config";
 import axios from "axios";
-import { User } from "./controllers/User";
+import { User } from "../controllers/User";
 import to from "await-to-js";
-import * as db from "./db";
+import * as db from "../db";
 
 const router = express.Router();
+
+export default router;
 
 export function checkSetup(req, res, next) {
   if (!process.env.AUTHENTICATORDOMAIN) {
@@ -29,21 +31,18 @@ router.get("/strategy/:strategy", checkSetup, (req, res) => {
   return res.redirect(
     `${config.url}/initiate?client_id=${
       config.openAuthenticator ?? "boiler"
-    }&strategy=${req.params.strategy}&redirect_uri=${
-      config.url
-    }/api/oauth/callback`
+    }&strategy=${req.params.strategy}&redirect_uri=${config.url}/oauth/callback`
   );
 });
 
 router.get("/strategies", async (req, res) => {
-  if (!process.env.AUTHENTICATORDOMAIN) {
+  if (!config.openAuthenticator?.enabled || !config.openAuthenticator?.url) {
     return res.json([]);
   }
 
-  const strats = await axios.get(
-    `${process.env.PROTOCOL}://${process.env.AUTHENTICATORDOMAIN}/strategies`,
-    { timeout: 5000 }
-  );
+  const strats = await axios.get(`${config.openAuthenticator.url}/strategies`, {
+    timeout: 5000,
+  });
 
   return res.json(strats.data);
 });

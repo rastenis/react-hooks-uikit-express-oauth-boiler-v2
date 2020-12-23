@@ -71,7 +71,7 @@ export const Login = () => {
                 <a
                   type="button"
                   className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-                  href={`/api/oauth/strategy/${strategy}`}
+                  href={`/oauth/strategy/${strategy}`}
                 >
                   <span
                     uk-icon={`icon: ${strategy}`}
