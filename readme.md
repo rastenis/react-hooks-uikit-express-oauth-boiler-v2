@@ -89,7 +89,7 @@ The HTTPS certificates will be generated for you when you run the composition, a
 
 ### Information & sources
 
-Explore open-authenticator: [open-authenticator GitHub](https://github.com/Scharkee/open-authenticator)
+Check out open-authenticator: [open-authenticator GitHub](https://github.com/Scharkee/open-authenticator)
 
 React docs can be found here: [React docs.](https://reactjs.org/docs/getting-started.html)
 
