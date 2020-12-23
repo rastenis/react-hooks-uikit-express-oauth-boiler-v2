@@ -240,7 +240,7 @@ export interface MainState {
   data: {};
   people: Person[];
   auth: AuthState;
-  messages: Message[]; //TODO: type
+  messages: Message[];
   userData: any;
   authStrategies: string[]; // this is used if open-authenticator is being used.
 }

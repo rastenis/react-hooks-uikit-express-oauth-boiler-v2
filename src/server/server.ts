@@ -148,28 +148,3 @@ if (process.env.NODE_ENV == `production`) {
 }
 
 export default app;
-
-// router.get("/strategy/:strategy", checkSetup, (req, res) => {
-//   return res.redirect(
-//     `${process.env.PROTOCOL}://${
-//       process.env.AUTHENTICATORDOMAIN
-//     }/initiate?client_id=${
-//       config.authenticator?.client ?? "controls"
-//     }&strategy=${req.params.strategy}&redirect_uri=${process.env.PROTOCOL}://${
-//       process.env.DOMAIN
-//     }/api/oauth/callback`
-//   );
-// });
-
-// router.get("/strategies", async (req, res) => {
-//   if (!process.env.AUTHENTICATORDOMAIN) {
-//     return res.json([]);
-//   }
-
-//   const strats = await axios.get(
-//     `${process.env.PROTOCOL}://${process.env.AUTHENTICATORDOMAIN}/strategies`,
-//     { timeout: 5000 }
-//   );
-
-//   return res.json(strats.data);
-// });

@@ -47,10 +47,6 @@ $ npm run launch
 
 ```
 
-## TODO:
-
-- open-authenticator integration.
-
 ### Unguided key setup
 
 - The process for obtaining a Google key is described [here](https://developers.google.com/identity/protocols/OAuth2).
