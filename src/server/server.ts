@@ -88,31 +88,6 @@ app.use("/", onlyUnAuth);
 // only authhenticated users allowed
 app.use("/", onlyAuth);
 
-// router.get("/strategy/:strategy", checkSetup, (req, res) => {
-//   return res.redirect(
-//     `${process.env.PROTOCOL}://${
-//       process.env.AUTHENTICATORDOMAIN
-//     }/initiate?client_id=${
-//       config.authenticator?.client ?? "controls"
-//     }&strategy=${req.params.strategy}&redirect_uri=${process.env.PROTOCOL}://${
-//       process.env.DOMAIN
-//     }/api/oauth/callback`
-//   );
-// });
-
-// router.get("/strategies", async (req, res) => {
-//   if (!process.env.AUTHENTICATORDOMAIN) {
-//     return res.json([]);
-//   }
-
-//   const strats = await axios.get(
-//     `${process.env.PROTOCOL}://${process.env.AUTHENTICATORDOMAIN}/strategies`,
-//     { timeout: 5000 }
-//   );
-
-//   return res.json(strats.data);
-// });
-
 // data fetch route (initially just a session ping to avoid localStorage, now user mock data preload has been added)
 app.get("/api/data", (req, res) => {
   // processing messages
@@ -149,6 +124,7 @@ app.get("/api/data", (req, res) => {
       };
     }),
     messages,
+    openAuthenticatorEnabled: config.openAuthenticator?.enabled,
   });
 });
 
@@ -167,3 +143,28 @@ if (process.env.NODE_ENV == `production`) {
 }
 
 export default app;
+
+// router.get("/strategy/:strategy", checkSetup, (req, res) => {
+//   return res.redirect(
+//     `${process.env.PROTOCOL}://${
+//       process.env.AUTHENTICATORDOMAIN
+//     }/initiate?client_id=${
+//       config.authenticator?.client ?? "controls"
+//     }&strategy=${req.params.strategy}&redirect_uri=${process.env.PROTOCOL}://${
+//       process.env.DOMAIN
+//     }/api/oauth/callback`
+//   );
+// });
+
+// router.get("/strategies", async (req, res) => {
+//   if (!process.env.AUTHENTICATORDOMAIN) {
+//     return res.json([]);
+//   }
+
+//   const strats = await axios.get(
+//     `${process.env.PROTOCOL}://${process.env.AUTHENTICATORDOMAIN}/strategies`,
+//     { timeout: 5000 }
+//   );
+
+//   return res.json(strats.data);
+// });

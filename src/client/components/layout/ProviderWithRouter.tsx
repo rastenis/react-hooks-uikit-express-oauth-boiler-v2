@@ -13,13 +13,7 @@ import {
 // Make a context
 export const MainContext = React.createContext<MainStore>({
   dispatch: async (action: Action) => {}, //placeholder. This gets populated by ProviderWithRouter.
-  state: {
-    auth: AuthState.WAITING,
-    data: {},
-    people: [],
-    messages: [],
-    userData: {},
-  },
+  state: defaultMainState,
   history: (undefined as unknown) as History,
 });
 

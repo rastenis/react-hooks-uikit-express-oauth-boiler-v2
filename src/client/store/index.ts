@@ -54,6 +54,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
             ? AuthState.AUTHENTICATED
             : AuthState.NOT_AUTHENTICATED,
           messages: [],
+          authStrategies: [],
         };
 
         // register server side messages, if any
@@ -61,7 +62,31 @@ export const mainReducerMiddleware = (dispatch, history) =>
           newState.messages.push(...data.messages);
         }
 
+        if (data.openAuthenticatorURL) {
+          // Contacting open-authenticator to fetch strategies.
+          await middleware({
+            type: Actions.DO_OPENAUTHENTICATOR_FETCH,
+            payload: data.openAuthenticatorURL,
+          });
+        }
+
         dispatch({ type: Actions.SET_STATE, payload: newState });
+        break;
+      }
+
+      case Actions.DO_OPENAUTHENTICATOR_FETCH: {
+        const [error, res] = await to(
+          axios.get(`${action.payload}/strategies`, { timeout: 5000 })
+        );
+        // We do not need to show the clients errors for this; the login methods simply will not show up.
+
+        const data = res?.data;
+
+        const addition: any = {
+          authStrategies: data,
+        };
+
+        dispatch({ type: Actions.SET_STATE, payload: addition });
         break;
       }
 
@@ -204,6 +229,7 @@ export enum Actions {
   DO_AUTH_UNLINK = `DO_AUTH_UNLINK`,
   DO_PASSWORD_CHANGE = `DO_PASSWORD_CHANGE`,
   DO_REGISTRATION = "DO_REGISTRATION",
+  DO_OPENAUTHENTICATOR_FETCH = "DO_OPENAUTHENTICATOR_FETCH",
 }
 
 export interface Action {
@@ -217,6 +243,7 @@ export interface MainState {
   auth: AuthState;
   messages: Message[]; //TODO: type
   userData: any;
+  authStrategies: string[]; // this is used if open-authenticator is being used.
 }
 
 export interface MainStore {
@@ -253,4 +280,5 @@ export const defaultMainState: MainState = {
   auth: AuthState.WAITING,
   messages: [],
   people: [],
+  authStrategies: [],
 };

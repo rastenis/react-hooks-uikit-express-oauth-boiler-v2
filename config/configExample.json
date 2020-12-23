@@ -3,7 +3,7 @@
   "mongooseConnectionString": "mongodb://localhost:27017/boiler",
   "saltAmount": 11,
   "secret": "very-secret-phrase",
-  "url": "http://example.com",
+  "url": "https://example.com",
   "secure": false,
   "tls": {
     "tos": false,
@@ -13,6 +13,7 @@
   "openAuthenticator": {
     "enabled": true,
     "client": "boiler",
-    "key": "pass"
+    "key": "pass",
+    "url": "https://auth.example.com"
   }
 }
