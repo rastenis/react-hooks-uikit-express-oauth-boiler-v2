@@ -14,9 +14,9 @@ import mongoose from "mongoose";
 import faker from "faker";
 import mongoStore from "connect-mongo";
 
-import onlyUnauthenticatedRoutes from "./routes/unAuth";
-import onlyAuthenticatedRoutes from "./routes/auth";
-import oauthRoutes from "./routes/oauth";
+import onlyUnauthenticatedRoutes from "./routes/notAuthenticated";
+import onlyAuthenticatedRoutes from "./routes/authenticated";
+import oauthRoutes from "./routes/OAuth";
 
 import { User, User as ControllerUser } from "./controllers/User";
 import { config } from "./config";

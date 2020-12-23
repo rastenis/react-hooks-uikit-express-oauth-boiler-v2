@@ -66,7 +66,7 @@ router.get("/callback", async (req, res) => {
   }
 
   // verifying...
-  const verif = await axios.post(`${config.url}/verify`, {
+  const verif = await axios.post(`${config.openAuthenticator.url}/verify`, {
     code: req.query.code,
   });
 
@@ -93,23 +93,32 @@ router.get("/callback", async (req, res) => {
   const strategyFormatted =
     verif.data.strategy[0].toUpperCase() + verif.data.strategy.slice(1);
 
-  // TODO: switch to .emails?
   let foundUser = await db.User.findOne({
     [`tokens.${verif.data.strategy}`]: verif.data.identity,
   }).exec();
 
+  let user;
+
   // No user found. Create new user.
   if (!foundUser) {
+    user = await to(
+      new User(
+        { tokens: { [verif.data.strategy]: verif.data.identity } },
+        true
+      ).saveUser()
+    );
+
     req.session.messages.push({
-      error: true,
-      msg: "No user with these credentials!",
+      error: false,
+      msg: `You have created an account via ${strategyFormatted}!`,
     });
-    return res.redirect("/");
+  } else {
+    user = new User(foundUser);
   }
 
-  console.log(`${foundUser.email} logged in via OAuth - ${strategyFormatted}.`);
+  console.log(`${user.email} logged in via OAuth - ${strategyFormatted}.`);
 
-  const [err] = await to(_promisifiedPassportLogin(req, new User(foundUser)));
+  const [err] = await to(_promisifiedPassportLogin(req, user));
 
   if (err) {
     console.error(err);
