@@ -90,6 +90,7 @@ export const Profile = () => {
         style={{ width: "60%" }}
         className="uk-form-stacked uk-container uk-container-center"
       >
+        {/* Password management */}
         {Object.keys(store.state.userData || {}).length ? (
           store.state.userData.password ? (
             <div className="uk-margin">
@@ -162,65 +163,54 @@ export const Profile = () => {
           ) : null
         ) : null}
       </div>
-      <div
-        style={{ width: "60%" }}
-        className="uk-form-stacked uk-container uk-container-center"
-      >
-        <h3>Linked Accounts</h3>
-        {store.state?.userData?.tokens?.google ? (
-          <button
-            type="button"
-            className="uk-button uk-button-danger  uk-width-expand uk-margin-small-bottom"
-            onClick={submitUnlinkAuth}
-            data-target="google"
-            disabled={
-              !(
-                store.state.userData.tokens.length > 1 ||
-                store.state.userData.password
-              )
-            }
-          >
-            <span uk-icon="icon: google" className=" uk-margin-small-right" />
-            Unlink Google
-          </button>
-        ) : (
-          <a
-            type="button"
-            className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-            href="/auth/google"
-          >
-            <span uk-icon="icon: google" className=" uk-margin-small-right" />
-            Link Google
-          </a>
-        )}
 
-        {store.state?.userData?.tokens?.twitter ? (
-          <button
-            type="button"
-            className="uk-button uk-button-danger uk-width-expand uk-margin-small-bottom"
-            onClick={submitUnlinkAuth}
-            data-target="twitter"
-            disabled={
-              !(
-                store.state.userData.tokens.length > 1 ||
-                store.state.userData.password
-              )
-            }
+      {/* OAuth management */}
+      {store.state.authStrategies?.length ? (
+        <div>
+          <h3>Linked Accounts</h3>
+          <div
+            style={{ width: "60%" }}
+            className="uk-form-stacked uk-container uk-container-center"
           >
-            <span uk-icon="icon: twitter" className=" uk-margin-small-right" />
-            Unlink Twitter
-          </button>
-        ) : (
-          <a
-            type="button"
-            className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-            href="/auth/twitter"
-          >
-            <span uk-icon="icon: twitter" className=" uk-margin-small-right" />
-            Link Twitter
-          </a>
-        )}
-      </div>
+            {store.state.authStrategies.map((strategy) => {
+              return store.state?.userData?.tokens?.[strategy] ? (
+                <button
+                  type="button"
+                  className="uk-button uk-button-danger  uk-width-expand uk-margin-small-bottom"
+                  onClick={submitUnlinkAuth}
+                  data-target={strategy}
+                  disabled={
+                    !(
+                      store.state.userData.tokens.filter((t) => t).length > 1 || // if the amount of linked oauth methods is just 1 and the user does not have a password, unlink is not permitted.
+                      store.state.userData.password
+                    )
+                  }
+                >
+                  <span
+                    uk-icon={`icon: ${strategy}`}
+                    className="uk-margin-small-right"
+                  />
+                  Unlink {strategy[0].toUpperCase() + strategy.slice(1)}
+                </button>
+              ) : (
+                <a
+                  type="button"
+                  className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
+                  href={`/auth/${strategy}`}
+                >
+                  <span
+                    uk-icon={`icon: ${strategy}`}
+                    className="uk-margin-small-right"
+                  />
+                  Link {strategy[0].toUpperCase() + strategy.slice(1)}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

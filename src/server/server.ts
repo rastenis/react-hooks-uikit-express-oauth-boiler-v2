@@ -124,7 +124,7 @@ app.get("/api/data", (req, res) => {
       };
     }),
     messages,
-    openAuthenticatorEnabled: config.openAuthenticator?.enabled,
+    openAuthenticatorURL: config.openAuthenticator?.url, // send the url if enabled.
   });
 });
 
