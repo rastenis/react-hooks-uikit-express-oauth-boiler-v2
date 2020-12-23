@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./data/uploads:/app/packages/core/uploads
+      - ./config:/app/config
     environment:
       REBUILD: "${REBUILD}"
   mongo:
