@@ -8,7 +8,7 @@ services:
     depends_on:
       - mongo
     ports:
-      - "8080:8080"
+      - "8080:80" # This is not really needed, you just access it through HTTPS via BOILER_DOMAIN
     volumes:
       - ./config:/app/config
     environment:
@@ -25,3 +25,18 @@ services:
     image: scharkee/open-authenticator
     volumes:
       - ./config/open-authenticator:/app/config
+  nginx:
+    container_name: nginx
+    restart: always
+    build:
+      context: ./nginx-certbot
+      args:
+        BOILER_DOMAIN: yourdomain.com
+        AUTHENTICATOR_DOMAIN: auth.yourdomain.com
+    environment:
+      CERTBOT_EMAIL: example.email@something.com
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/letsencrypt:/etc/letsencrypt
