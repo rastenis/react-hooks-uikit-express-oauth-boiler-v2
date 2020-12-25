@@ -78,6 +78,10 @@ router.get("/callback", async (req, res) => {
       throw "Non-existent user attached to session. Inconsistent state!";
     }
 
+    if (!user.tokens) {
+      user.tokens = [] as any;
+    }
+
     user.tokens[verif.data.strategy] = verif.data.identity;
     user.markModified("tokens");
     user = await user.save();

@@ -196,7 +196,7 @@ export const Profile = () => {
                 <a
                   type="button"
                   className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-                  href={`/auth/${strategy}`}
+                  href={`/oauth/strategy/${strategy}`}
                 >
                   <span
                     uk-icon={`icon: ${strategy}`}
