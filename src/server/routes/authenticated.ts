@@ -29,10 +29,10 @@ router.post("/api/unlink", check, async (req, res) => {
     return res.status(500).send("Internal server error.");
   }
 
-  req.user = savedUser;
+  await to(_promisifiedPassportLogin(req, savedUser));
 
   return res.send({
-    state: { userData: req.user.toObject() },
+    state: { userData: req.user?.toObject() },
     msg: "Successfully unlinked!",
   });
 });

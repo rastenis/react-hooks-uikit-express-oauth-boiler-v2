@@ -79,13 +79,13 @@ router.get("/callback", async (req, res) => {
     }
 
     if (!user.tokens) {
-      user.tokens = [] as any;
+      user.tokens = {} as any;
     }
 
     user.tokens[verif.data.strategy] = verif.data.identity;
     user.markModified("tokens");
     user = await user.save();
-    req.user = user;
+    await to(_promisifiedPassportLogin(req, user)); // update user object
 
     req.session.messages.push({
       msg: `You have linked ${verif.data.strategy}!`,
@@ -105,12 +105,12 @@ router.get("/callback", async (req, res) => {
 
   // No user found. Create new user.
   if (!foundUser) {
-    user = await to(
-      new User(
-        { tokens: { [verif.data.strategy]: verif.data.identity } },
-        true
-      ).saveUser()
+    user = new User(
+      { tokens: { [verif.data.strategy]: verif.data.identity } },
+      true
     );
+
+    await user.saveUser();
 
     req.session.messages.push({
       error: false,
