@@ -57,12 +57,29 @@ console.log(
         default: "boiler",
         name: "client",
       },
+      {
+        type: "input",
+        message: `Email for LetsEncrypt certificate generation (any email):`,
+        default: "someemail@mail.com",
+        name: "letsencryptEmail",
+      },
     ]);
 
+    console.log(
+      "By continuing, you are accepting Lets Encrypt Terms of Service: https://letsencrypt.org/repository/"
+    );
+
+    console.log("Injecting values into docker-compose.yml...");
+
     // injecting docker compose values
-    exec(`sed -i "s/BOILER_DOMAIN_TEMP/${prompt.url}/g" ./docker-compose.yml`);
     exec(
-      `sed -i "s/OPENAUTHENTICATOR_DOMAIN_TEMP/${prompt.openAuthenticatorUrl}/g" ./docker-compose.yml`
+      `sed -i "s/BOILER_DOMAIN:.*/BOILER_DOMAIN: ${prompt.url}/g" ./docker-compose.yml`
+    );
+    exec(
+      `sed -i "s/OPENAUTHENTICATOR_DOMAIN:.*/OPENAUTHENTICATOR_DOMAIN: ${prompt.openAuthenticatorUrl}/g" ./docker-compose.yml`
+    );
+    exec(
+      `sed -i "s/CERTBOT_EMAIL:.*/CERTBOT_EMAIL: ${prompt.letsencryptEmail}/g" ./docker-compose.yml`
     );
 
     // Standardizing
