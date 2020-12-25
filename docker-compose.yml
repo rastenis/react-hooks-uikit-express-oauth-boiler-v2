@@ -31,8 +31,8 @@ services:
     build:
       context: ./nginx-certbot
       args:
-        BOILER_DOMAIN: yourdomain.com
-        AUTHENTICATOR_DOMAIN: auth.yourdomain.com
+        BOILER_DOMAIN: BOILER_DOMAIN_TEMP
+        OPENAUTHENTICATOR_DOMAIN: OPENAUTHENTICATOR_DOMAIN_TEMP
     environment:
       CERTBOT_EMAIL: example.email@something.com
     ports:

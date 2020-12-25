@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const inquirer = require("inquirer");
 const to = require("await-to-js").default;
 const chalk = require("chalk");
+const exec = require("child_process").exec;
 
 console.log(
   chalk.bgBlue.white.bold(
@@ -58,8 +59,11 @@ console.log(
       },
     ]);
 
-    //TODO:
-    // inject docker compose
+    // injecting docker compose values
+    exec(`sed -i "s/BOILER_DOMAIN_TEMP/${prompt.url}/g" ./docker-compose.yml`);
+    exec(
+      `sed -i "s/OPENAUTHENTICATOR_DOMAIN_TEMP/${prompt.openAuthenticatorUrl}/g" ./docker-compose.yml`
+    );
 
     // Standardizing
     prompt.url = "https://" + prompt.url;
@@ -70,7 +74,7 @@ console.log(
     // Openauthenticator config
     config.openAuthenticator.enabled = true;
     config.openAuthenticator.client = prompt.client;
-    config.openAuthenticator.url = prompt.openAuthenticatorUrl;
+    config.openAuthenticator.url = "https://" + prompt.openAuthenticatorUrl;
   } else {
     prompt = await inquirer.prompt([
       {
