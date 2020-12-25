@@ -78,6 +78,8 @@ $ docker exec -it authenticator yarn run config
 
 # After you are happy with the configurations (they will be persisted locally in config/open-authenticator), restart the container:
 $ docker restart authenticator
+# Upon restarting, open-authenticator will automatically install all required dependencies for your configuration. You are good to go!
+
 
 ```
 
