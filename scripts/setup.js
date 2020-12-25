@@ -53,7 +53,7 @@ console.log(
       },
       {
         type: "input",
-        message: `What is the open-authenticator client name for this boilerplate?:`,
+        message: `What is the open-authenticator client name for this boilerplate? (You will have to enter this in the open-authenticator setup!):`,
         default: "boiler",
         name: "client",
       },
