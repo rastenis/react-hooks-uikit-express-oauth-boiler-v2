@@ -38,12 +38,12 @@ $ cd react-hooks-uikit-express-oauth-boiler-v2
 # install dependencies. If you would rather use npm, try npm i. npm run SCRIPT for things below.
 $ yarn
 # perform guided setup
-$ yarn run setup
+$ yarn setup
 # build the client and launch everything in devmode on port 8080.
-$ yarn run dev
+$ yarn dev
 
 # launch in production mode on the port that was chosen when setting up (default 80)
-$ npm run launch
+$ yarn launch
 
 ```
 
@@ -59,7 +59,7 @@ Make sure to use `mongodb://mongo:27017/boiler` as the mongooseConnectionString 
 $ git clone https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.git
 $ cd react-hooks-uikit-express-oauth-boiler-v2
 # perform configuration
-$ yarn run setup
+$ yarn setup
 # launch!
 $ docker-compose up
 
@@ -75,6 +75,9 @@ In order to enable OAuth logins, run:
 
 # Configure your OAuth strategies (configure open-authenticator):
 $ docker exec -it authenticator yarn run config
+
+# After you are happy with the configurations (they will be persisted locally in config/open-authenticator), restart the container:
+$ docker restart authenticator
 
 ```
 
