@@ -5,3 +5,6 @@ passportKeys.json
 dist
 coverage
 data
+
+# this is purely for the value injections
+docker-compose.yml
