@@ -5,7 +5,9 @@
   "main": "dist/server/index.js",
   "scripts": {
     "deploy": "echo \"Error: no deployment options yet\" && exit 1",
-    "build": "webpack --optimization-minimize --optimization-node-env production --mode production && tsc",
+    "build": "yarn build:client && yarn build:server",
+    "build:client": "webpack --optimization-minimize --optimization-node-env production --mode production",
+    "build:server": "tsc",
     "dev": "concurrently \"yarn run dev:client\" \"yarn run dev:server\"",
     "dev:server": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'ts-node src/server/index.ts'",
     "dev:client": "webpack serve --host 0.0.0.0",

@@ -19,9 +19,9 @@ const router = express.Router();
 export default router;
 
 export function checkSetup(req, res, next) {
-  if (!process.env.AUTHENTICATORDOMAIN) {
+  if (!config.openAuthenticator?.enabled) {
     throw new Error(
-      "Open-authenticator is not set up! You can not access OAuth routes."
+      "open-authenticator is not set up! You can not access OAuth routes."
     );
   }
   next();
@@ -29,8 +29,8 @@ export function checkSetup(req, res, next) {
 
 router.get("/strategy/:strategy", checkSetup, (req, res) => {
   return res.redirect(
-    `${config.url}/initiate?client_id=${
-      config.openAuthenticator ?? "boiler"
+    `${config.openAuthenticator.url}/initiate?client_id=${
+      config.openAuthenticator.client ?? "boiler"
     }&strategy=${req.params.strategy}&redirect_uri=${config.url}/oauth/callback`
   );
 });
@@ -116,7 +116,11 @@ router.get("/callback", async (req, res) => {
     user = new User(foundUser);
   }
 
-  console.log(`${user.email} logged in via OAuth - ${strategyFormatted}.`);
+  console.log(
+    `${
+      user.email ?? user.tokens[verif.data.strategy]
+    } logged in via OAuth - ${strategyFormatted}.`
+  );
 
   const [err] = await to(_promisifiedPassportLogin(req, user));
 

@@ -62,14 +62,15 @@ export const mainReducerMiddleware = (dispatch, history) =>
           newState.messages.push(...data.messages);
         }
 
+        dispatch({ type: Actions.SET_STATE, payload: newState });
+
         if (data.openAuthenticatorEnabled) {
           // Contacting open-authenticator to fetch strategies.
-          await middleware({
+          middleware({
             type: Actions.DO_OPENAUTHENTICATOR_FETCH,
           });
         }
 
-        dispatch({ type: Actions.SET_STATE, payload: newState });
         break;
       }
 

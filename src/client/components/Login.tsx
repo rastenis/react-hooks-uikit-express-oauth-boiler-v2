@@ -66,7 +66,7 @@ export const Login = () => {
             </button>
 
             {/* OPEN-AUTHENTICATOR */}
-            {store.state.authStrategies.forEach((strategy) => {
+            {store.state.authStrategies.map((strategy) => {
               return (
                 <a
                   type="button"
@@ -77,7 +77,9 @@ export const Login = () => {
                     uk-icon={`icon: ${strategy}`}
                     className="uk-margin-small-right"
                   />
-                  Sign in with {strategy[0].toUpperCase() + strategy.slice(1)}
+                  <span>
+                    Sign in with {strategy[0].toUpperCase() + strategy.slice(1)}
+                  </span>
                 </a>
               );
             })}

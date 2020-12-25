@@ -5,10 +5,15 @@ import to from "await-to-js";
 const SALT_ROUDS = 10;
 
 export class User extends UserModel {
+  _rawDoc: any;
+
   constructor(doc?, isNew?: boolean) {
     super(doc);
     if (doc) {
-      this.isNew = isNew ?? false;
+      if (isNew) {
+        this._rawDoc = doc;
+        this.isNew = true;
+      }
     }
   }
 
@@ -33,7 +38,12 @@ export class User extends UserModel {
   }
 
   async saveUser() {
-    await this.save();
+    if (this.isNew && this._rawDoc) {
+      await User.create(this._rawDoc);
+      this.isNew = false;
+    } else {
+      await this.save();
+    }
     return this;
   }
 

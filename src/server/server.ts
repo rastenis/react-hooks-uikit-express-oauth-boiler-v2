@@ -69,10 +69,6 @@ app.use(
         config.secure || config.url.includes("https")
           ? Date.now() + 60 * 60 * 1000 * 4
           : undefined,
-      domain:
-        process.env.NODE_ENV === `production`
-          ? config.url.replace(/http:\/\/|https:\/\//g, "")
-          : "",
     },
     store: new MongoStore({
       mongooseConnection: mongoose.createConnection(
@@ -100,7 +96,7 @@ app.get("/api/data", (req, res) => {
   const messages = [] as { error: boolean; msg: string }[];
 
   if (req.session.messages) {
-    const m = Object.assign([], req.session.messages);
+    const m = req.session.messages;
     messages.push(...m);
   }
 
@@ -110,6 +106,7 @@ app.get("/api/data", (req, res) => {
     return res.send({
       auth: false,
       messages,
+      openAuthenticatorEnabled: config.openAuthenticator?.enabled,
     });
   }
 
