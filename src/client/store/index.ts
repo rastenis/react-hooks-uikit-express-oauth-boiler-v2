@@ -162,6 +162,25 @@ export const mainReducerMiddleware = (dispatch, history) =>
         break;
       }
 
+      case Actions.DO_AUTH_UNLINK: {
+        const strategyUnlinked = action.payload;
+
+        const [error, res] = await to(
+          axios.delete(`/oauth/strategy/${strategyUnlinked}`)
+        );
+        handleRequestError(dispatch, error);
+        // show message
+        handleRequestSuccess(dispatch, res);
+
+        // set updated user data
+        dispatch({
+          type: Actions.SET_STATE,
+          payload: { userData: res?.data.userData },
+        });
+
+        break;
+      }
+
       case Actions.DO_LOGOUT: {
         await axios.post(`/api/logout`);
 

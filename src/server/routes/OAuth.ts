@@ -27,12 +27,48 @@ export function checkSetup(req, res, next) {
   next();
 }
 
-router.get("/strategy/:strategy", checkSetup, (req, res) => {
+// For all routes below.
+router.use(checkSetup);
+
+// Login via OR link
+router.get("/strategy/:strategy", (req, res) => {
   return res.redirect(
     `${config.openAuthenticator.url}/initiate?client_id=${
       config.openAuthenticator.client ?? "boiler"
     }&strategy=${req.params.strategy}&redirect_uri=${config.url}/oauth/callback`
   );
+});
+
+// Unlink
+router.delete("/strategy/:strategy", async (req, res) => {
+  if (!req.session || !req.user) {
+    throw new Error("Failed to unlink OAuth strategy on non-existent session.");
+  }
+
+  if (typeof req.params.strategy !== "string") {
+    throw new Error("Invalid submission.");
+  }
+
+  // Do the unlink.
+  let user = new User(req.user);
+  if (!user) {
+    throw "Non-existent user attached to session. Inconsistent state!";
+  }
+
+  if (!user.tokens?.[req.params.strategy]) {
+    throw new Error(req.params.strategy + " is not linked!");
+  }
+
+  delete user.tokens[req.params.strategy];
+  user.markModified("tokens");
+  user = await user.save();
+  await to(_promisifiedPassportLogin(req, user)); // update user object
+
+  return res.json({
+    error: false,
+    msg: `You have unlinked ${req.query.strategy}!`,
+    userData: user.cleanObject(),
+  });
 });
 
 router.get("/strategies", async (req, res) => {

@@ -114,10 +114,7 @@ app.get("/api/data", (req, res) => {
   // returning async data
   return res.send({
     auth: true,
-    userData: {
-      ...req.user.toObject(),
-      password: req.user.password ? "<password>" : null, // this is to avoid leaking the password hash.
-    },
+    userData: req.user.cleanObject(),
     // mock some data
     people: Array.apply(null, Array(4)).map(() => {
       return {
