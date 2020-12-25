@@ -85,7 +85,7 @@ console.log(
     // Standardizing
     prompt.url = "https://" + prompt.url;
     prompt.mongoUrl = "mongodb://mongo:27017/boiler";
-    prompt.sessionSecure = true;
+    prompt.sessionSecure = false; // This means insecure from boiler to nginx, which is what we want - secure sessions will be used in production with a 1-gap trust proxy for nginx.
     prompt.port = 80;
 
     // Openauthenticator config
@@ -96,7 +96,7 @@ console.log(
     prompt = await inquirer.prompt([
       {
         type: "input",
-        message: `Enter the boilerplate URL that will point to this IP: (does not matter if just running locally)`,
+        message: `Enter the boilerplate URL + protocol that will point to this IP: (does not matter if just running locally)`,
         name: "url",
         default: "https://domain.com",
       },
@@ -114,11 +114,17 @@ console.log(
       },
       {
         type: "confirm",
-        message: `Would you like to use secure sessions ? (you must if you are using https)`,
+        message: `Would you like to use secure sessions ? (advised, but only works under https)`,
         default: true,
         name: "sessionSecure",
       },
     ]);
+
+    if (!prompt.sessionSecure && prompt.url.includes("https://")) {
+      console.info(
+        "Please note, since you are using a HTTPS domain and picked insecure sessions, I am assuming you are using a reverse HTTP proxy (nginx/apache) for providing TLS certificates. Thus, sessions will still be secure, but your reverse proxy will be assumed secure by Node. If this is NOT what you want, please set config.overrideInsecureSession=true (keep in mind, insecure sessions should NOT be used in production)."
+      );
+    }
   }
 
   config.port = prompt.port;

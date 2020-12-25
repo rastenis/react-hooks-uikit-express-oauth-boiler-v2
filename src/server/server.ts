@@ -44,7 +44,7 @@ declare global {
 }
 
 // proxy providing tls (override)
-if (config.url.includes("https") && !config.secure) {
+if (config.url.includes("https://") && !config.secure) {
   app.set("trust proxy", 1);
 }
 
@@ -60,13 +60,14 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure:
+        !config.overrideInsecureSession &&
         process.env.NODE_ENV === `production` &&
-        (config.secure || config.url.includes("https"))
+        (config.secure || config.url.includes("https://"))
           ? true
           : false,
       // 4 hours cookie expiration when secure, infinite when unsecure.
       maxAge:
-        config.secure || config.url.includes("https")
+        config.secure || config.url.includes("https://")
           ? Date.now() + 60 * 60 * 1000 * 4
           : undefined,
     },
