@@ -13,6 +13,8 @@ export class User extends UserModel {
       if (isNew) {
         this._rawDoc = doc;
         this.isNew = true;
+      } else {
+        this.isNew = false;
       }
     }
   }
