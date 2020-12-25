@@ -181,7 +181,7 @@ export const Profile = () => {
                   data-target={strategy}
                   disabled={
                     !(
-                      store.state.userData.tokens.filter((t) => t).length > 1 || // if the amount of linked oauth methods is just 1 and the user does not have a password, unlink is not permitted.
+                      Object.keys(store.state.userData.tokens).length > 1 || // if the amount of linked oauth methods is 1 or less, and the user does not have a password, unlink is not permitted.
                       store.state.userData.password
                     )
                   }
