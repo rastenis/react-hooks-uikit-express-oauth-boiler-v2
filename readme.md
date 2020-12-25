@@ -42,7 +42,7 @@ $ yarn run setup
 # build the client and launch everything in devmode on port 8080.
 $ yarn run dev
 
-# launch in production mode on the port that was chosen when setting up (default 7777)
+# launch in production mode on the port that was chosen when setting up (default 80)
 $ npm run launch
 
 ```

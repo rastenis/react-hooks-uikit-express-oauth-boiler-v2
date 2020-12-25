@@ -42,25 +42,13 @@ console.log(
         type: "input",
         message: `Enter the boilerplate URL that will point to this IP:`,
         name: "url",
-        default: "https://domain.com",
+        default: "domain.com",
       },
       {
         type: "input",
         message: `Enter the open-authenticator URL that will also point to this IP:`,
         name: "openAuthenticatorUrl",
-        default: "https://auth.domain.com",
-      },
-      {
-        type: "input",
-        message: `Enter your mongo connection string (use default for composition):`,
-        default: "mongodb://mongo:27017/boiler",
-        name: "mongoUrl",
-      },
-      {
-        type: "confirm",
-        message: `Would you like to use secure sessions ? (you must if you are using https)`,
-        default: true,
-        name: "sessionSecure",
+        default: "auth.domain.com",
       },
       {
         type: "input",
@@ -69,6 +57,20 @@ console.log(
         name: "client",
       },
     ]);
+
+    //TODO:
+    // inject docker compose
+
+    // Standardizing
+    prompt.url = "https://" + prompt.url;
+    prompt.mongoUrl = "mongodb://mongo:27017/boiler";
+    prompt.sessionSecure = true;
+    prompt.port = 80;
+
+    // Openauthenticator config
+    config.openAuthenticator.enabled = true;
+    config.openAuthenticator.client = prompt.client;
+    config.openAuthenticator.url = prompt.openAuthenticatorUrl;
   } else {
     prompt = await inquirer.prompt([
       {
@@ -102,12 +104,6 @@ console.log(
   config.secure = prompt.sessionSecure;
   config.url = prompt.url;
   config.mongooseConnectionString = prompt.mongoUrl;
-
-  if (initialPrompt.useComposition) {
-    config.openAuthenticator.enabled = true;
-    config.openAuthenticator.client = prompt.client;
-    config.openAuthenticator.url = prompt.openAuthenticatorUrl;
-  }
 
   // Random session secret gen.
   config.secret = [...Array(30)]
