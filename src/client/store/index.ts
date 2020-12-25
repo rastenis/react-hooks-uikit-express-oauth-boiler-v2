@@ -54,6 +54,7 @@ export const mainReducerMiddleware = (dispatch, history) =>
             ? AuthState.AUTHENTICATED
             : AuthState.NOT_AUTHENTICATED,
           messages: [],
+          authStrategies: [],
         };
 
         // register server side messages, if any
@@ -62,6 +63,30 @@ export const mainReducerMiddleware = (dispatch, history) =>
         }
 
         dispatch({ type: Actions.SET_STATE, payload: newState });
+
+        if (data.openAuthenticatorEnabled) {
+          // Contacting open-authenticator to fetch strategies.
+          middleware({
+            type: Actions.DO_OPENAUTHENTICATOR_FETCH,
+          });
+        }
+
+        break;
+      }
+
+      case Actions.DO_OPENAUTHENTICATOR_FETCH: {
+        const [error, res] = await to(
+          axios.get(`/oauth/strategies`, { timeout: 5000 })
+        );
+        // We do not need to show the clients errors for this; the login methods simply will not show up.
+
+        const data = res?.data;
+
+        const addition: any = {
+          authStrategies: data,
+        };
+
+        dispatch({ type: Actions.SET_STATE, payload: addition });
         break;
       }
 
@@ -137,6 +162,25 @@ export const mainReducerMiddleware = (dispatch, history) =>
         break;
       }
 
+      case Actions.DO_AUTH_UNLINK: {
+        const strategyUnlinked = action.payload;
+
+        const [error, res] = await to(
+          axios.delete(`/oauth/strategy/${strategyUnlinked}`)
+        );
+        handleRequestError(dispatch, error);
+        // show message
+        handleRequestSuccess(dispatch, res);
+
+        // set updated user data
+        dispatch({
+          type: Actions.SET_STATE,
+          payload: { userData: res?.data.userData },
+        });
+
+        break;
+      }
+
       case Actions.DO_LOGOUT: {
         await axios.post(`/api/logout`);
 
@@ -204,6 +248,7 @@ export enum Actions {
   DO_AUTH_UNLINK = `DO_AUTH_UNLINK`,
   DO_PASSWORD_CHANGE = `DO_PASSWORD_CHANGE`,
   DO_REGISTRATION = "DO_REGISTRATION",
+  DO_OPENAUTHENTICATOR_FETCH = "DO_OPENAUTHENTICATOR_FETCH",
 }
 
 export interface Action {
@@ -215,8 +260,9 @@ export interface MainState {
   data: {};
   people: Person[];
   auth: AuthState;
-  messages: Message[]; //TODO: type
+  messages: Message[];
   userData: any;
+  authStrategies: string[]; // this is used if open-authenticator is being used.
 }
 
 export interface MainStore {
@@ -253,4 +299,5 @@ export const defaultMainState: MainState = {
   auth: AuthState.WAITING,
   messages: [],
   people: [],
+  authStrategies: [],
 };

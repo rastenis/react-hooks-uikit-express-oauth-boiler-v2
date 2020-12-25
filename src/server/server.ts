@@ -14,8 +14,10 @@ import mongoose from "mongoose";
 import faker from "faker";
 import mongoStore from "connect-mongo";
 
-import onlyUnAuth from "./routes/unAuth";
-import onlyAuth from "./routes/auth";
+import onlyUnauthenticatedRoutes from "./routes/notAuthenticated";
+import onlyAuthenticatedRoutes from "./routes/authenticated";
+import oauthRoutes from "./routes/OAuth";
+
 import { User, User as ControllerUser } from "./controllers/User";
 import { config } from "./config";
 
@@ -42,7 +44,7 @@ declare global {
 }
 
 // proxy providing tls (override)
-if (config.url.includes("https") && !config.secure) {
+if (config.url.includes("https://") && !config.secure) {
   app.set("trust proxy", 1);
 }
 
@@ -58,19 +60,16 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure:
+        !config.overrideInsecureSession &&
         process.env.NODE_ENV === `production` &&
-        (config.secure || config.url.includes("https"))
+        (config.secure || config.url.includes("https://"))
           ? true
           : false,
       // 4 hours cookie expiration when secure, infinite when unsecure.
       maxAge:
-        config.secure || config.url.includes("https")
+        config.secure || config.url.includes("https://")
           ? Date.now() + 60 * 60 * 1000 * 4
           : undefined,
-      domain:
-        process.env.NODE_ENV === `production`
-          ? config.url.replace(/http:\/\/|https:\/\//g, "")
-          : "",
     },
     store: new MongoStore({
       mongooseConnection: mongoose.createConnection(
@@ -82,36 +81,14 @@ app.use(
 
 app.use(passport.initialize(), passport.session());
 
+// open-authenticator hook
+app.use("/oauth", oauthRoutes);
+
 // only unauthenticated users allowed
-app.use("/", onlyUnAuth);
+app.use("/", onlyUnauthenticatedRoutes);
 
 // only authhenticated users allowed
-app.use("/", onlyAuth);
-
-// router.get("/strategy/:strategy", checkSetup, (req, res) => {
-//   return res.redirect(
-//     `${process.env.PROTOCOL}://${
-//       process.env.AUTHENTICATORDOMAIN
-//     }/initiate?client_id=${
-//       config.authenticator?.client ?? "controls"
-//     }&strategy=${req.params.strategy}&redirect_uri=${process.env.PROTOCOL}://${
-//       process.env.DOMAIN
-//     }/api/oauth/callback`
-//   );
-// });
-
-// router.get("/strategies", async (req, res) => {
-//   if (!process.env.AUTHENTICATORDOMAIN) {
-//     return res.json([]);
-//   }
-
-//   const strats = await axios.get(
-//     `${process.env.PROTOCOL}://${process.env.AUTHENTICATORDOMAIN}/strategies`,
-//     { timeout: 5000 }
-//   );
-
-//   return res.json(strats.data);
-// });
+app.use("/", onlyAuthenticatedRoutes);
 
 // data fetch route (initially just a session ping to avoid localStorage, now user mock data preload has been added)
 app.get("/api/data", (req, res) => {
@@ -120,7 +97,7 @@ app.get("/api/data", (req, res) => {
   const messages = [] as { error: boolean; msg: string }[];
 
   if (req.session.messages) {
-    const m = Object.assign([], req.session.messages);
+    const m = req.session.messages;
     messages.push(...m);
   }
 
@@ -130,16 +107,14 @@ app.get("/api/data", (req, res) => {
     return res.send({
       auth: false,
       messages,
+      openAuthenticatorEnabled: config.openAuthenticator?.enabled,
     });
   }
 
   // returning async data
   return res.send({
     auth: true,
-    userData: {
-      ...req.user.toObject(),
-      password: req.user.password ? "<password>" : null, // this is to avoid leaking the password hash.
-    },
+    userData: req.user.cleanObject(),
     // mock some data
     people: Array.apply(null, Array(4)).map(() => {
       return {
@@ -149,6 +124,7 @@ app.get("/api/data", (req, res) => {
       };
     }),
     messages,
+    openAuthenticatorEnabled: config.openAuthenticator?.enabled,
   });
 });
 

@@ -1,11 +1,9 @@
-const chalk = require("chalk");
-const prompt = require("prompt-sync")({ sigint: true });
-const configPath = "../config/config.json";
+("use strict");
 const fs = require("fs-extra");
-
-// base values
-let config = require("../config/configExample.json");
-let passportKeys = require("../config/passportKeysExample.json");
+const inquirer = require("inquirer");
+const to = require("await-to-js").default;
+const chalk = require("chalk");
+const exec = require("child_process").exec;
 
 console.log(
   chalk.bgBlue.white.bold(
@@ -17,94 +15,146 @@ console.log(
   chalk.bgBlue.white.bold("Starting setup..." + new Array(33).join(" "))
 );
 
-config.url = prompt(
-  "Enter your website url: (http://example.com): ",
-  config.url
-);
+(async () => {
+  let [configError, config] = await to(
+    fs.readJson("./config/configExample.json")
+  );
 
-config.mongooseConnectionString = prompt(
-  "Enter your MongoDB connection string: (mongodb://127.0.0.1:27017/boiler): ",
-  config.mongooseConnectionString
-);
+  if (configError) {
+    console.error(
+      "Could not read template configuration. It should be present in config/configExample.json."
+    );
+    process.exit(0);
+  }
 
-config.selfHosted =
-  prompt(
-    "Use Auto-generated TLS? (will require ports 80 and 443) (y/N): ",
-    "N"
-  ).toLowerCase() == "y";
+  const initialPrompt = await inquirer.prompt([
+    {
+      type: "confirm",
+      message: `Would you like to run in composition mode? (Easy setup for OAuth logins via open-authenticator)`,
+      default: true,
+      name: "useComposition",
+    },
+  ]);
 
-if (config.selfHosted) {
-  console.log(chalk.bgBlue.white("Showing additional TLS options:"));
-  config.tls.email = prompt("Enter Letsencrypt email (your email): ");
-  config.tls.tos =
-    prompt(
-      "Do you agree with the LetsEncrypt TOS? (Y/n): ",
-      "Y"
-    ).toLowerCase() == "y";
+  let prompt;
+  if (initialPrompt.useComposition) {
+    prompt = await inquirer.prompt([
+      {
+        type: "input",
+        message: `Enter the boilerplate URL that will point to this IP:`,
+        name: "url",
+        default: "domain.com",
+      },
+      {
+        type: "input",
+        message: `Enter the open-authenticator URL that will also point to this IP:`,
+        name: "openAuthenticatorUrl",
+        default: "auth.domain.com",
+      },
+      {
+        type: "input",
+        message: `What is the open-authenticator client name for this boilerplate? (You will have to enter this in the open-authenticator setup!):`,
+        default: "boiler",
+        name: "client",
+      },
+      {
+        type: "input",
+        message: `Email for LetsEncrypt certificate generation (any email):`,
+        default: "someemail@mail.com",
+        name: "letsencryptEmail",
+      },
+    ]);
 
-  if (!config.tls.tos) {
-    config.selfHosted = false;
-    console.log(chalk.bgBlue.white("Reverting TLS setup..."));
+    console.log(
+      "By continuing, you are accepting Lets Encrypt Terms of Service: https://letsencrypt.org/repository/"
+    );
+
+    console.log("Injecting values into docker-compose.yml...");
+
+    // injecting docker compose values
+    exec(
+      `sed -i "s/BOILER_DOMAIN:.*/BOILER_DOMAIN: ${prompt.url}/g" ./docker-compose.yml`
+    );
+    exec(
+      `sed -i "s/OPENAUTHENTICATOR_DOMAIN:.*/OPENAUTHENTICATOR_DOMAIN: ${prompt.openAuthenticatorUrl}/g" ./docker-compose.yml`
+    );
+    exec(
+      `sed -i "s/CERTBOT_EMAIL:.*/CERTBOT_EMAIL: ${prompt.letsencryptEmail}/g" ./docker-compose.yml`
+    );
+
+    // Standardizing
+    prompt.url = "https://" + prompt.url;
+    prompt.mongoUrl = "mongodb://mongo:27017/boiler";
+    prompt.sessionSecure = false; // This means insecure from boiler to nginx, which is what we want - secure sessions will be used in production with a 1-gap trust proxy for nginx.
+    prompt.port = 80;
+
+    // Openauthenticator config
+    config.openAuthenticator.enabled = true;
+    config.openAuthenticator.client = prompt.client;
+    config.openAuthenticator.url = "https://" + prompt.openAuthenticatorUrl;
   } else {
-    let current = 0;
-    while (true) {
-      config.tls.domains[current] = prompt(
-        "Please enter domain " + (current + 1) + " (ENTER to cancel): "
+    prompt = await inquirer.prompt([
+      {
+        type: "input",
+        message: `Enter the boilerplate URL + protocol that will point to this IP: (does not matter if just running locally)`,
+        name: "url",
+        default: "https://domain.com",
+      },
+      {
+        type: "number",
+        message: `Enter production port: (yarn launch. For yarn dev it is 8080)`,
+        name: "port",
+        default: 80,
+      },
+      {
+        type: "input",
+        message: `Enter your mongo connection string (use default for composition):`,
+        default: "mongodb://mongo:27017/boiler",
+        name: "mongoUrl",
+      },
+      {
+        type: "confirm",
+        message: `Would you like to use secure sessions ? (advised, but only works under https)`,
+        default: true,
+        name: "sessionSecure",
+      },
+    ]);
+
+    if (!prompt.sessionSecure && prompt.url.includes("https://")) {
+      console.info(
+        "Please note, since you are using a HTTPS domain and picked insecure sessions, I am assuming you are using a reverse HTTP proxy (nginx/apache) for providing TLS certificates. Thus, sessions will still be secure, but your reverse proxy will be assumed secure by Node. If this is NOT what you want, please set config.overrideInsecureSession=true (keep in mind, insecure sessions should NOT be used in production)."
       );
-      if (config.tls.domains[current] == "") {
-        config.tls.domains.splice(current, 1);
-        break;
-      } else {
-        current++;
-      }
     }
   }
-}
 
-if (!config.selfHosted) {
-  console.log("NOTE:");
-  console.log(
-    "NOTE: dev mode (npm run dev) is accessed via a separate port that will be displayed when it is launched."
-  );
-  console.log(
-    "NOTE: in production (npm run launch), access the server directly via the server port. "
-  );
-  console.log("NOTE:");
-  config.port = ~~prompt("Enter production/server port (7777): ", config.port);
-}
+  config.port = prompt.port;
+  config.secure = prompt.sessionSecure;
+  config.url = prompt.url;
+  config.mongooseConnectionString = prompt.mongoUrl;
 
-if (
-  prompt(
-    "Do you want to learn how to set up Google and Twitter API keys? (Y/n): ",
-    "Y"
-  ).toLowerCase() == "y"
-) {
-  console.log(chalk.bgBlue.white("Showing additional API KEY information:"));
-  console.log(
-    "Go to https://console.developers.google.com and create a new project. Then, create credentials for 'OAuth client ID'."
-  );
-  passportKeys.GOOGLE_ID = prompt("Paste the Client ID here:");
-  passportKeys.GOOGLE_SECRET = prompt("Paste the Client secret here:");
-  console.log(chalk.bgBlue.white("Great!"));
-  console.log(
-    "Now, go to https://developer.twitter.com/en/apps and create a new twitter app. Navigate to Consumer API keys."
-  );
-  passportKeys.TWITTER_KEY = prompt("Paste the API key here:");
-  passportKeys.TWITTER_SECRET = prompt("Paste the API secret key here:");
-  console.log("Passport keys configured.");
-}
+  // Random session secret gen.
+  config.secret = [...Array(30)]
+    .map((i) => (~~(Math.random() * 36)).toString(36))
+    .join("");
 
-console.log(chalk.bgBlue.white.bold("Setup done." + new Array(39).join(" ")));
-console.log(chalk.bgBlue.black(new Array(50).join(" ")));
-console.log(chalk.bgBlue.white.bold("Exiting..." + new Array(40).join(" ")));
+  console.log("Writing config...");
+  await fs.writeJSON("./config/config.json", config);
 
-config.secret = [...Array(30)]
-  .map((i) => (~~(Math.random() * 36)).toString(36))
-  .join("");
+  console.log(chalk.bgBlue.white.bold("Setup done." + new Array(39).join(" ")));
+  console.log(chalk.bgBlue.black(new Array(50).join(" ")));
+  console.log(chalk.bgBlue.white.bold("Exiting..." + new Array(40).join(" ")));
 
-// key setup will be either done, or ignored, either way, saving set values/defaults
-fs.writeJsonSync("./config/passportKeys.json", passportKeys);
+  if (initialPrompt.useComposition) {
+    console.log(
+      `Run ${chalk.cyan.bold(
+        "docker exec -it authenticator yarn run config"
+      )} if you want to set up open-authenticator and the OAuth strategies.`
+    );
+  } else {
+    console.log(
+      `You can re-run this later if you would like to setup OAuth logins (Google, Twitter, etc.) via open-authenticator.`
+    );
+  }
 
-// writing and exitting
-fs.writeJsonSync("./config/config.json", config);
-process.exit(0);
+  process.exit(0);
+})();

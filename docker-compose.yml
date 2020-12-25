@@ -1,0 +1,42 @@
+version: "3.4"
+services:
+  boiler:
+    restart: always
+    build:
+      context: ./
+    container_name: boiler
+    depends_on:
+      - mongo
+    ports:
+      - "8080:80" # This is not really needed, you just access it through HTTPS via BOILER_DOMAIN
+    volumes:
+      - ./config:/app/config
+    environment:
+      REBUILD: "${REBUILD}"
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    volumes:
+      - ./data/db:/data/db
+  authenticator:
+    restart: always
+    container_name: authenticator
+    image: scharkee/open-authenticator
+    volumes:
+      - ./config/open-authenticator:/app/config
+  nginx:
+    container_name: nginx
+    restart: always
+    build:
+      context: ./nginx-certbot
+      args:
+        BOILER_DOMAIN: domain.com
+        OPENAUTHENTICATOR_DOMAIN: auth.domain.com
+    environment:
+      CERTBOT_EMAIL: someemail@mail.com
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data/letsencrypt:/etc/letsencrypt

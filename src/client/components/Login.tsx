@@ -64,29 +64,25 @@ export const Login = () => {
             >
               Submit
             </button>
-            {/* <a
-                type="button"
-                className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-                href="/auth/google"
-              >
-                <span
-                  uk-icon="icon: google"
-                  className=" uk-margin-small-right"
-                />
-                Sign in with Google
-              </a>
 
-              <a
-                type="button"
-                className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
-                href="/auth/twitter"
-              >
-                <span
-                  uk-icon="icon: twitter"
-                  className=" uk-margin-small-right"
-                />
-                Sign in with Twitter
-              </a> */}
+            {/* OPEN-AUTHENTICATOR */}
+            {store.state.authStrategies.map((strategy) => {
+              return (
+                <a
+                  type="button"
+                  className="uk-button uk-button-default uk-width-expand uk-margin-small-bottom"
+                  href={`/oauth/strategy/${strategy}`}
+                >
+                  <span
+                    uk-icon={`icon: ${strategy}`}
+                    className="uk-margin-small-right"
+                  />
+                  <span>
+                    Sign in with {strategy[0].toUpperCase() + strategy.slice(1)}
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </div>
       </form>
