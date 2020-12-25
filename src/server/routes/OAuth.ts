@@ -66,7 +66,7 @@ router.delete("/strategy/:strategy", async (req, res) => {
 
   return res.json({
     error: false,
-    msg: `You have unlinked ${req.query.strategy}!`,
+    msg: `You have unlinked ${req.params.strategy}!`,
     userData: user.cleanObject(),
   });
 });
