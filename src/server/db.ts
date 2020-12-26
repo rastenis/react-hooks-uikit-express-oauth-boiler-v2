@@ -3,10 +3,7 @@ import { config } from "./config";
 import { User as UserController } from "./controllers/User";
 
 const userSchema = new mongoose.Schema({
-  email: {
-    unique: true,
-    type: String,
-  },
+  email: String,
   password: String,
   tokens: {},
   profile: {},

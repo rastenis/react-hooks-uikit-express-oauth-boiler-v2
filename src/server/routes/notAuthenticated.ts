@@ -57,12 +57,19 @@ router.post("/api/register", check, async (req, res) => {
       .send("Password must be between 5 and a 100 characters.");
   }
 
+  const duplicateEmail = await User.exists({ email: req.body.email });
+
+  if (duplicateEmail) {
+    return res.status(500).send("User with given email already exists!");
+  }
+
   let [err, user] = (await to(new User(req.body, true).saveUser())) as [
     any,
     User
   ];
 
   if (err) {
+    // This was used before, but if you are accepting OAuth registrations without an email, null emails will collide.
     if (err.code == 11000) {
       return res.status(500).send("User with given email already exists!");
     } else {
