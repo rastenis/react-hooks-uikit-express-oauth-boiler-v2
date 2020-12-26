@@ -6,6 +6,8 @@ A React TypeScript boilerplate utilizing React hooks, using Express as backend, 
 
 [Demo website.](https://reacthooks.demos.matasr.com)
 
+---
+
 ## Features
 
 - Webpack+Babel for the client
@@ -28,17 +30,23 @@ A React TypeScript boilerplate utilizing React hooks, using Express as backend, 
   - Automatic certificate generation if running composition
   - Simple/dev mode (http only, custom port), for use with reverse proxy configurations or for basic http operation.
 
+---
+
 ## Running in basic mode
 
 ```bash
-
-# clone the repo
+# clone the repository
 $ git clone https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.git
+
+# switch to the folder
 $ cd react-hooks-uikit-express-oauth-boiler-v2
+
 # install dependencies. If you would rather use npm, try npm i. npm run SCRIPT for things below.
 $ yarn
+
 # perform guided setup
 $ yarn setup
+
 # build the client and launch everything in devmode on port 8080.
 $ yarn dev
 
@@ -47,6 +55,8 @@ $ yarn launch
 
 ```
 
+---
+
 ## Running in composition mode (OAuth-ready)
 
 This takes care of the database, routing, HTTPS certificate generation, and OAuth for you.
@@ -54,12 +64,15 @@ This takes care of the database, routing, HTTPS certificate generation, and OAut
 Make sure to use `mongodb://mongo:27017/boiler` as the mongooseConnectionString in the config, if you're running in composition mode.
 
 ```bash
-
 # clone the repo
 $ git clone https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.git
+
+# switch to the folder
 $ cd react-hooks-uikit-express-oauth-boiler-v2
+
 # perform configuration
 $ yarn && yarn setup
+
 # launch!
 $ docker-compose up
 
@@ -67,21 +80,24 @@ $ docker-compose up
 
 ```
 
+---
+
 ## Enabling OAuth logins
 
 In order to enable OAuth logins, run:
 
 ```bash
-
 # Configure your OAuth strategies (configure open-authenticator):
 $ docker exec -it authenticator yarn run config
 
 # After you are happy with the configurations (they will be persisted locally in config/open-authenticator), restart the container:
 $ docker restart authenticator
+
 # Upon restarting, open-authenticator will automatically install all required dependencies for your configuration. You are good to go!
 
-
 ```
+
+---
 
 ### Domain setup
 
@@ -119,7 +135,7 @@ Read about UIKit [here](https://getuikit.com/docs/introduction)
 
 ### Contribution & Support
 
-Submit bugs and requests through the project's issue tracker:
+Submit bugs and requests through the project's issue tracker. You are also very welcome to contribute :)
 
 [![Issues](http://img.shields.io/github/issues/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.svg)](https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2/issues)
 
