@@ -92,6 +92,21 @@ If running in composition mode, you must have two domains pointed to your IP:
 
 The HTTPS certificates will be generated for you when you run the composition, as long as these domains are indeed pointed to the machine you are running it on.
 
+### open-authenticator instance for testing
+
+If you would like to test everything out, but can not set up open-authenticator for one or more reasons, you can use this instance:
+
+```json
+
+"client" : "boiler_C22nynzEB7S3gKCCSzaDKuFX"
+"url": "https://auth.ensio.hefa.lt"
+
+```
+
+This open-authenticator instance contains strategies for Google, Twitter and GitHub.
+
+**Do not** use this in production, since this client will be removed after some time, and it may not always be online.
+
 ### Information & sources
 
 Check out open-authenticator: [open-authenticator GitHub](https://github.com/Scharkee/open-authenticator)
@@ -101,3 +116,13 @@ React docs can be found here: [React docs.](https://reactjs.org/docs/getting-sta
 Read about React Hooks [here](https://reactjs.org/docs/hooks-intro.html)
 
 Read about UIKit [here](https://getuikit.com/docs/introduction)
+
+### Contribution & Support
+
+Submit bugs and requests through the project's issue tracker:
+
+[![Issues](http://img.shields.io/github/issues/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.svg)](https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2/issues)
+
+### License
+
+This project is licensed under the terms of the MIT license.

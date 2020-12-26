@@ -9,7 +9,6 @@
   "openAuthenticator": {
     "enabled": true,
     "client": "boiler",
-    "key": "pass",
     "url": "https://auth.example.com"
   }
 }
