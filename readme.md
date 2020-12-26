@@ -76,7 +76,9 @@ $ yarn && yarn setup
 # launch!
 $ docker-compose up
 
-# At this point you can access everything through your domain, as long as it is properly pointed towards your IP. However, you will not see any OAuth options yet at the login or profile.
+# At this point you can access everything through your domain,
+# as long as it is properly pointed towards your IP.
+# However, you will not see any OAuth options yet at the login or profile.
 
 ```
 
@@ -90,10 +92,12 @@ In order to enable OAuth logins, run:
 # Configure your OAuth strategies (configure open-authenticator):
 $ docker exec -it authenticator yarn run config
 
-# After you are happy with the configurations (they will be persisted locally in config/open-authenticator), restart the container:
+# After you are happy with the configurations restart the container.
+# The config will be persisted locally in config/open-authenticator.
 $ docker restart authenticator
 
-# Upon restarting, open-authenticator will automatically install all required dependencies for your configuration. You are good to go!
+# Upon restarting, open-authenticator will automatically install all required dependencies.
+# You are good to go!
 
 ```
 
