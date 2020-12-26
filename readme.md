@@ -59,7 +59,7 @@ Make sure to use `mongodb://mongo:27017/boiler` as the mongooseConnectionString 
 $ git clone https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2.git
 $ cd react-hooks-uikit-express-oauth-boiler-v2
 # perform configuration
-$ yarn setup
+$ yarn && yarn setup
 # launch!
 $ docker-compose up
 
