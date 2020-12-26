@@ -6,11 +6,6 @@
   "url": "https://example.com",
   "secure": false,
   "overrideInsecureSession": false,
-  "tls": {
-    "tos": false,
-    "email": "example@email.com",
-    "domains": []
-  },
   "openAuthenticator": {
     "enabled": true,
     "client": "boiler",
