@@ -8,11 +8,9 @@ services:
     depends_on:
       - mongo
     ports:
-      - "8080:80" # This is not really needed, you just access it through HTTPS via BOILER_DOMAIN
+      - "8080:80" # This is not really needed, you just access it through HTTPS via BOILER_DOMAIN if you are running this composition.
     volumes:
       - ./config:/app/config
-    environment:
-      REBUILD: "${REBUILD}"
   mongo:
     container_name: mongo
     image: mongo
