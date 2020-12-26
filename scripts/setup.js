@@ -102,20 +102,20 @@ console.log(
       },
       {
         type: "number",
-        message: `Enter production port: (yarn launch. For yarn dev it is 8080)`,
+        message: `Enter production port: (this is for 'yarn launch'. For 'yarn dev' it is 8080)`,
         name: "port",
         default: 80,
       },
       {
         type: "input",
-        message: `Enter your mongo connection string (use default for composition):`,
-        default: "mongodb://mongo:27017/boiler",
+        message: `Enter your mongo connection string:`,
+        default: "mongodb://localhost:27017/boiler",
         name: "mongoUrl",
       },
       {
         type: "confirm",
         message: `Would you like to use secure sessions ? (advised, but only works under https)`,
-        default: true,
+        default: false,
         name: "sessionSecure",
       },
     ]);

@@ -172,7 +172,7 @@ export const Profile = () => {
             style={{ width: "60%" }}
             className="uk-form-stacked uk-container uk-container-center"
           >
-            {store.state.authStrategies.map((strategy) => {
+            {store.state.authStrategies?.map((strategy) => {
               return store.state?.userData?.tokens?.[strategy] ? (
                 <button
                   type="button"

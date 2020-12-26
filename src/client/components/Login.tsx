@@ -66,7 +66,7 @@ export const Login = () => {
             </button>
 
             {/* OPEN-AUTHENTICATOR */}
-            {store.state.authStrategies.map((strategy) => {
+            {store.state.authStrategies?.map((strategy) => {
               return (
                 <a
                   type="button"
