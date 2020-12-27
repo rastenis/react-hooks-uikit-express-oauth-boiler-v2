@@ -90,7 +90,7 @@ In order to enable OAuth logins, run:
 
 ```bash
 # Configure your OAuth strategies (configure open-authenticator):
-$ docker exec -it authenticator yarn run config
+$ docker exec -it authenticator yarn setup
 
 # After you are happy with the configurations restart the container.
 # The config will be persisted locally in config/open-authenticator.

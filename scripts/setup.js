@@ -147,7 +147,7 @@ console.log(
   if (initialPrompt.useComposition) {
     console.log(
       `Run ${chalk.cyan.bold(
-        "docker exec -it authenticator yarn run config"
+        "docker exec -it authenticator yarn setup"
       )} if you want to set up open-authenticator and the OAuth strategies.`
     );
   } else {
