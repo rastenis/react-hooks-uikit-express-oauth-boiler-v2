@@ -12,7 +12,7 @@ import bodyParser from "body-parser";
 import session from "express-session";
 import mongoose from "mongoose";
 import faker from "faker";
-import mongoStore from "connect-mongo";
+import MongoStore from "connect-mongo";
 
 import onlyUnauthenticatedRoutes from "./routes/notAuthenticated";
 import onlyAuthenticatedRoutes from "./routes/authenticated";
@@ -21,7 +21,6 @@ import oauthRoutes from "./routes/OAuth";
 import { User, User as ControllerUser } from "./controllers/User";
 import { config } from "./config";
 
-const MongoStore = mongoStore(session);
 const app = express();
 
 // extending the session object for our uses.
@@ -71,10 +70,8 @@ app.use(
           ? Date.now() + 60 * 60 * 1000 * 4
           : undefined,
     },
-    store: new MongoStore({
-      mongooseConnection: mongoose.createConnection(
-        config.mongooseConnectionString
-      ),
+    store: MongoStore.create({
+      mongoUrl: config.mongooseConnectionString,
     }),
   })
 );
