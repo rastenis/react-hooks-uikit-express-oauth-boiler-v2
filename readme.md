@@ -1,3 +1,10 @@
+> [!WARNING]
+> **This project is unmaintained and has been archived.**
+>
+> Its dependencies are several years out of date and likely contain known
+> security vulnerabilities. Please do not use it as a starting point for new
+> projects. The code remains available for reference only.
+
 # RHUE: react-hooks-uikit-express-oauth-boiler-v2
 
 [![Status](https://travis-ci.org/scharkee/react-hooks-uikit-express-oauth-boiler-v2.svg?branch=master)](https://travis-ci.org/scharkee/react-hooks-uikit-express-oauth-boiler-v2)
